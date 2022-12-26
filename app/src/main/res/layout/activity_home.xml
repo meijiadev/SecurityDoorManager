@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/home_bg">
+
+    <RelativeLayout
+        android:id="@+id/title_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/time_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
+            android:gravity="center"
+            android:text="0000-00-00 00:00 星期一"
+            android:textColor="@color/text_c6cbff"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal">
+
+
+            <ImageView
+                android:id="@+id/logo_iv"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:src="@mipmap/logo_iv" />
+
+            <TextView
+                android:id="@+id/title_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="智能安检门系统"
+                android:textColor="@color/text_c6cbff"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/setting_iv"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="40dp"
+            android:src="@mipmap/setting_icon" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/title_layout"
+        >
+        <RelativeLayout
+            android:id="@+id/count_layout"
+            android:layout_width="280dp"
+            android:layout_height="280dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:background="@mipmap/shape_bg">
+
+            <TextView
+                android:id="@+id/text_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="安检门检测统计"
+                android:textSize="16sp"
+                android:textColor="@color/text_c6cbff"
+                android:textStyle="bold"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                />
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/pie_chart"
+                android:layout_width="250dp"
+                android:layout_height="120dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/text_tv"
+                />
+
+            <com.hjq.shape.view.ShapeTextView
+                android:id="@+id/pass_total_tv"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
+                android:layout_below="@id/pie_chart"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:paddingStart="15dp"
+                android:paddingEnd="10dp"
+                android:text="通过总数：100"
+                android:textColor="@color/text_c6cbff"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:shape_radius="10dp"
+                app:shape_strokeColor="@color/text_c6cbff"
+                app:shape_strokeWidth="1dp" />
+
+            <com.hjq.shape.view.ShapeTextView
+                android:id="@+id/pass_tv"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
+                android:layout_below="@id/pie_chart"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_toRightOf="@id/pass_total_tv"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="净通过数：87"
+                android:textColor="@color/text_c6cbff"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:shape_radius="10dp"
+                app:shape_strokeColor="@color/text_c6cbff"
+                app:shape_strokeWidth="1dp" />
+
+            <com.hjq.shape.view.ShapeTextView
+                android:id="@+id/phone_alarm_tv"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
+                android:layout_below="@id/pass_total_tv"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="手机报警：100"
+                android:textColor="@color/text_c6cbff"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:shape_radius="10dp"
+                app:shape_strokeColor="@color/text_c6cbff"
+                app:shape_strokeWidth="1dp" />
+
+            <com.hjq.shape.view.ShapeTextView
+                android:id="@+id/other_alarm_tv"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
+                android:layout_below="@id/pass_tv"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_toRightOf="@id/pass_total_tv"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="其他报警：87"
+                android:textColor="@color/text_c6cbff"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:shape_radius="10dp"
+                app:shape_strokeColor="@color/text_c6cbff"
+                app:shape_strokeWidth="1dp" />
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/video_layout"
+            android:layout_width="0dp"
+            android:layout_height="280dp"
+            android:layout_weight="1.3"
+            android:layout_below="@id/title_layout"
+            android:layout_marginStart="10dp"
+            android:background="@mipmap/shape_bg"
+            android:layout_toRightOf="@id/count_layout"
+            android:layout_marginTop="10dp"
+            >
+            <com.hjq.shape.layout.ShapeFrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="170dp"
+                app:shape_strokeColor="@color/text_c6cbff"
+                app:shape_strokeWidth="1dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                >
+                <net.ossrs.yasea.SrsCameraView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/cur_camera_view"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginStart="1dp"
+                    android:layout_marginEnd="1dp"
+                    android:layout_marginBottom="1dp"
+
+                   />
+            </com.hjq.shape.layout.ShapeFrameLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/other_layout"
+            android:layout_width="0dp"
+            android:layout_height="280dp"
+            android:layout_weight="1"
+            android:layout_below="@id/title_layout"
+            android:layout_marginStart="10dp"
+            android:layout_toRightOf="@id/video_layout"
+            android:layout_marginTop="10dp"
+            android:background="@mipmap/shape_bg"
+            android:layout_marginEnd="10dp"
+            >
+
+            <com.hjq.shape.view.ShapeImageView
+                android:layout_width="150dp"
+                android:layout_height="260dp"
+                android:layout_centerInParent="true"
+                android:src="@mipmap/body"
+                app:shape_radius="18dp"
+                app:shape_strokeWidth="1dp"
+                app:shape_strokeColor="@color/text_c6cbff"
+                />
+
+            <com.sjb.securitydoormanager.ScanView
+                android:id="@+id/scan_view"
+                android:layout_width="150dp"
+                android:layout_height="230dp"
+                android:layout_centerInParent="true"
+                app:unit_scan_img="@drawable/scan_view" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

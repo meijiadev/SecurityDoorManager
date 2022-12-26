@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <declare-styleable name="ScanView" tools:ignore="ResourceName">
+        <!--扫描的图片-->
+        <attr name="unit_scan_img" format="reference" />
+        <!--动画时长-->
+        <attr name="anim_duration" format="integer" />
+    </declare-styleable>
+</resources>
