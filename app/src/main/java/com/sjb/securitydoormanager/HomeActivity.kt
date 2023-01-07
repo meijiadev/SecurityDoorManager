@@ -40,7 +40,9 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
     private val mWidth = 1270
     private val mHeight = 720
 
-    private val rtmpUrl = "rtmp://192.168.1.250:1935/live/147258369"
+    private val rtmpUrl = "rtmp://112.74.191.164:1935/live/123456789"
+
+
 
     /**
      *权限请求是否通过
@@ -49,6 +51,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
 
     override fun getViewBinding(): ActivityHomeBinding {
         return ActivityHomeBinding.inflate(layoutInflater)
+
     }
 
 
@@ -58,7 +61,6 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
 
     override fun initView() {
         binding.run {
-
             // 设置是否显示扇形图中的文字
             pieChart.setDrawEntryLabels(false)
             // 是否显示圆心
@@ -87,6 +89,9 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
         binding.scanView.setAnimDuration(2000)
     }
 
+    /**
+     * 设置扇形图的数据
+     */
     private fun setChartData() {
         val entries = mutableListOf<PieEntry>()
         entries.add(PieEntry(PassInfoManager.hasPass, "净通过"))

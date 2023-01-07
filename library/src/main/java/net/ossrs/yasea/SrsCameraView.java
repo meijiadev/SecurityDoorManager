@@ -113,6 +113,8 @@ public class SrsCameraView extends GLSurfaceView implements GLSurfaceView.Render
         if (width > height) {
             Matrix.orthoM(mProjectionMatrix, 0, -1.0f, 1.0f, -aspectRatio, aspectRatio, -1.0f, 1.0f);
         } else {
+
+
             Matrix.orthoM(mProjectionMatrix, 0, -aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
         }
     }
@@ -369,7 +371,7 @@ public class SrsCameraView extends GLSurfaceView implements GLSurfaceView.Render
         }
 
         cameraCallbacksHandler.onCameraParameters(params);
-        mCamera.setParameters(params);
+
 
         mCamera.setDisplayOrientation(mPreviewRotation);
 

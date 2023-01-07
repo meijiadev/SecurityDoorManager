@@ -18,3 +18,4 @@ rootProject.name = "SecurityDoorManager"
 include ':app'
 include ':base'
 include ':library'
+include ':veriface'
