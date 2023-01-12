@@ -1,4 +1,4 @@
-package com.sjb.securitydoormanager
+package com.sjb.securitydoormanager.constant
 
 object PassInfoManager {
     // 通过次数

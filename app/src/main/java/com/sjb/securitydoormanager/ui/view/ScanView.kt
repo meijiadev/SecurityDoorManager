@@ -1,4 +1,4 @@
-package com.sjb.securitydoormanager
+package com.sjb.securitydoormanager.ui.view
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -10,9 +10,9 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.view.View
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.graphics.drawable.toBitmap
 import com.orhanobut.logger.Logger
+import com.sjb.securitydoormanager.R
 import kotlin.math.ceil
 import android.util.AttributeSet as AttributeSet1
 

@@ -1,8 +1,7 @@
-package com.sjb.securitydoormanager
+package com.sjb.securitydoormanager.ui.activity
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
@@ -20,6 +19,8 @@ import com.orhanobut.logger.Logger
 import com.permissionx.guolindev.PermissionX
 import com.sjb.base.base.BaseMvActivity
 import com.sjb.base.base.BaseViewModel
+import com.sjb.securitydoormanager.constant.PassInfoManager
+import com.sjb.securitydoormanager.R
 import com.sjb.securitydoormanager.databinding.ActivityHomeBinding
 import net.ossrs.yasea.SrsEncodeHandler
 import net.ossrs.yasea.SrsEncodeHandler.SrsEncodeListener
@@ -41,7 +42,6 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
     private val mHeight = 720
 
     private val rtmpUrl = "rtmp://112.74.191.164:1935/live/123456789"
-
 
 
     /**
@@ -89,6 +89,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
         binding.scanView.setAnimDuration(2000)
     }
 
+
     /**
      * 设置扇形图的数据
      */
@@ -116,6 +117,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
             otherAlarmTv.text = "其他报警：" + PassInfoManager.otherAlarms.toInt()
         }
     }
+
 
 
     override fun initData() {
@@ -163,6 +165,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
             DateUtil.getCurrentDateTime(DateUtil.Y_M_D_H_M) + " " + DateUtil.getCurrentDayOfWeekCH()
     }
 
+
     /**
      * 初始化推流的相关配置
      */
@@ -181,6 +184,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
             it.switchToHardEncoder()
             it.startPublish(rtmpUrl)
         }
+
     }
 
 
