@@ -10,7 +10,8 @@ object DataProtocol {
     val MIN_CMD_LENG = 5
 
     // 头部命令
-    val HEAD_CMD = 0xAA.toByte()
+    val HEAD_CMD_1 = 0x0D.toByte()
+    val HEAD_CMD_2=0x0A.toByte()
 
     // 功能码
     val CODE_CMD = ""

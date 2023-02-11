@@ -1,5 +1,7 @@
 package com.sjb.securitydoormanager.serialport
 
+import HexUtil
+import com.orhanobut.logger.Logger
 import java.util.ArrayDeque
 
 /**
@@ -23,20 +25,25 @@ class DataMcuProcess : DataProcBase() {
 
         for (i in buf.indices) {
             // 当前位置的字节是命令头部
-            if (buf[i] == DataProtocol.HEAD_CMD) {
+            if (buf[i] == DataProtocol.HEAD_CMD_1) {
                 if (i == buf.size - 1) return false
-                cmdLen = buf[i + 1].toInt()
-                if (bufLen - i < cmdLen) {
-                    // 从命令头部开始的数据长度不足一条完整的命令
-                    // 将已读指针往后移，在开始命令之前的数据舍弃掉
-                    pollQueue(i)
-                    return false
-                } else {
-                    pollQueue(i)
-                    // 取出一条完整的命令
-                    val oneCmd=Utils.getBytes(buf,i,cmdLen)
+                if (buf[i+1]==DataProtocol.HEAD_CMD_2){
+                    cmdLen = buf[i + 2].toInt()
+                    if (bufLen - i -1< cmdLen) {
+                        // 从命令头部开始的数据长度不足一条完整的命令
+                        // 将已读指针往后移，在开始命令之前的数据舍弃掉
+                        pollQueue(i)
+                        return false
+                    } else {
+                        pollQueue(i)
+                        // 取出一条完整的命令
+                        val oneCmd=Utils.getBytes(buf,i,cmdLen)
+                        val msg= HexUtil.formatHexString(oneCmd,true)
+                        Logger.i("serialPort Receive：$msg")
 
+                    }
                 }
+
             }
         }
         return true

@@ -22,9 +22,9 @@ abstract class DataProcBase : IDataProc {
             mQueueByte.add(buffer[i])
         }
         var cmd=findCmdProc(mQueueByte)
-        while (cmd){
-            cmd=findCmdProc(mQueueByte)
-        }
+//        while (cmd){
+//            cmd=findCmdProc(mQueueByte)
+//        }
 
     }
 

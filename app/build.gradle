@@ -59,4 +59,10 @@ dependencies {
     implementation 'com.kunminx.arch:unpeek-livedata:7.2.0-beta1'
     // 权限请求框架
     implementation 'com.guolindev.permissionx:permissionx:1.7.1'
+    // Mqtt 的通讯框架
+    implementation 'com.github.itfitness:MQTTAndroid:1.0.0'
+    implementation 'com.blankj:utilcodex:1.31.0'
+    // google 的Json库
+    implementation 'com.google.code.gson:gson:2.8.0'
+    implementation group: 'commons-codec', name: 'commons-codec', version: '1.11'
 }

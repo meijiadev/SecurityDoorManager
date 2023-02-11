@@ -60,11 +60,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_below="@id/title_layout"
+        android:layout_marginTop="20dp"
         >
         <RelativeLayout
             android:id="@+id/count_layout"
             android:layout_width="280dp"
-            android:layout_height="280dp"
+            android:layout_height="500dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:background="@mipmap/shape_bg">
@@ -84,7 +85,7 @@
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/pie_chart"
                 android:layout_width="250dp"
-                android:layout_height="120dp"
+                android:layout_height="250dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_below="@id/text_tv"
@@ -96,7 +97,7 @@
                 android:layout_height="30dp"
                 android:layout_below="@id/pie_chart"
                 android:layout_marginStart="15dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:gravity="center"
                 android:paddingStart="15dp"
                 android:paddingEnd="10dp"
@@ -114,7 +115,7 @@
                 android:layout_height="30dp"
                 android:layout_below="@id/pie_chart"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:layout_toRightOf="@id/pass_total_tv"
                 android:gravity="center"
                 android:paddingStart="10dp"
@@ -168,19 +169,69 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/other_layout"
+            android:layout_width="0dp"
+            android:layout_height="500dp"
+            android:layout_weight="1"
+            android:layout_below="@id/title_layout"
+            android:layout_marginStart="10dp"
+            android:layout_toRightOf="@id/video_layout"
+            android:layout_marginTop="10dp"
+            android:background="@mipmap/shape_bg"
+            >
+
+            <com.hjq.shape.view.ShapeImageView
+                android:layout_width="150dp"
+                android:layout_height="250dp"
+                android:layout_centerHorizontal="true"
+                android:src="@mipmap/body"
+                app:shape_radius="18dp"
+                app:shape_strokeWidth="1dp"
+                app:shape_strokeColor="@color/text_c6cbff"
+                android:layout_marginTop="30dp"
+                />
+
+            <com.sjb.securitydoormanager.ui.view.ScanView
+                android:id="@+id/scan_view"
+                android:layout_width="150dp"
+                android:layout_height="220dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="45dp"
+                app:unit_scan_img="@drawable/scan_view" />
+
+            <View
+                android:id="@+id/line1"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_below="@id/scan_view"
+                android:layout_marginTop="30dp"
+                android:background="@color/white60"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                />
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/line1"
+                android:src="@drawable/phone"
+                android:layout_marginTop="20dp"
+                android:layout_centerHorizontal="true"
+                />
+        </RelativeLayout>
+        <RelativeLayout
             android:id="@+id/video_layout"
             android:layout_width="0dp"
-            android:layout_height="280dp"
-            android:layout_weight="1.3"
+            android:layout_height="500dp"
+            android:layout_weight="1.2"
             android:layout_below="@id/title_layout"
             android:layout_marginStart="10dp"
             android:background="@mipmap/shape_bg"
-            android:layout_toRightOf="@id/count_layout"
             android:layout_marginTop="10dp"
             >
             <com.hjq.shape.layout.ShapeFrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="170dp"
+                android:layout_height="wrap_content"
                 app:shape_strokeColor="@color/text_c6cbff"
                 app:shape_strokeWidth="1dp"
                 android:layout_marginStart="10dp"
@@ -189,7 +240,7 @@
                 >
                 <net.ossrs.yasea.SrsCameraView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="260dp"
                     android:id="@+id/cur_camera_view"
                     android:layout_marginTop="1dp"
                     android:layout_marginStart="1dp"
@@ -197,40 +248,10 @@
                     android:layout_marginBottom="1dp"
                     android:visibility="visible"
 
-                   />
+                    />
             </com.hjq.shape.layout.ShapeFrameLayout>
         </RelativeLayout>
 
-        <RelativeLayout
-            android:id="@+id/other_layout"
-            android:layout_width="0dp"
-            android:layout_height="280dp"
-            android:layout_weight="1"
-            android:layout_below="@id/title_layout"
-            android:layout_marginStart="10dp"
-            android:layout_toRightOf="@id/video_layout"
-            android:layout_marginTop="10dp"
-            android:background="@mipmap/shape_bg"
-            android:layout_marginEnd="10dp"
-            >
-
-            <com.hjq.shape.view.ShapeImageView
-                android:layout_width="150dp"
-                android:layout_height="260dp"
-                android:layout_centerInParent="true"
-                android:src="@mipmap/body"
-                app:shape_radius="18dp"
-                app:shape_strokeWidth="1dp"
-                app:shape_strokeColor="@color/text_c6cbff"
-                />
-
-            <com.sjb.securitydoormanager.ui.view.ScanView
-                android:id="@+id/scan_view"
-                android:layout_width="150dp"
-                android:layout_height="230dp"
-                android:layout_centerInParent="true"
-                app:unit_scan_img="@drawable/scan_view" />
-        </RelativeLayout>
 
     </LinearLayout>
 

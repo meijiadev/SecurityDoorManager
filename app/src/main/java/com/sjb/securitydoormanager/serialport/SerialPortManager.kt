@@ -18,12 +18,12 @@ class SerialPortManager private constructor() {
     /**
      * 串口地址
      */
-    private var path: String? = null
+    private var path: String? = "/dev/ttyS4"
 
     /**
      * 波特率
      */
-    private var baudrate: Int = 115200
+    private var baudrate: Int = 9600
 
     /**
      * 输入流，读取信息
@@ -72,6 +72,7 @@ class SerialPortManager private constructor() {
         serialPort = SerialPort.newBuilder(path, baudrate).build()
         mInputStream = serialPort?.inputStream
         mOutputStream = serialPort?.outputStream
+        Logger.i("串口初始化：$path,$baudrate")
     }
 
     /**
@@ -112,20 +113,27 @@ class SerialPortManager private constructor() {
                 if (isReadStop) {
                     break
                 }
-
+               // sleep(200)
                 kotlin.runCatching {
-                    val buffer = ByteArray(64)
+                    val buffer = ByteArray(30)
                     mInputStream?.let {
                         ret = it.read(buffer)
                         if (ret > 0) {
                             // 数据回调
+//                            Logger.i(
+//                                "serialPort receive:${
+//                                    HexUtil.formatHexString(buffer,true)
+//                                }"
+//                            )
                             mIDataProc?.onDataReceive(buffer, ret)
                         }
                     }
                 }.onFailure {
-                    Logger.e("报错信息：${it.message}")
+                    Logger.e("报错信息：${it.message},${it.localizedMessage}")
                 }
             }
         }
     }
+
+
 }

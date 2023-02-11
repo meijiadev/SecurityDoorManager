@@ -58,7 +58,7 @@ class ScanView : View{
         setScanBitmap()
     }
 
-    fun setStartFromBootom(isFromBottom: Boolean) {
+    fun setStartFromBottom(isFromBottom: Boolean) {
         this.isStartFromBottom = isFromBottom
         stopScanAnimAndReset()
     }

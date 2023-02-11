@@ -22,11 +22,20 @@ import com.sjb.base.base.BaseViewModel
 import com.sjb.securitydoormanager.constant.PassInfoManager
 import com.sjb.securitydoormanager.R
 import com.sjb.securitydoormanager.databinding.ActivityHomeBinding
+import com.sjb.securitydoormanager.mqtt.MqttHelper
+import com.sjb.securitydoormanager.mqtt.data.Qos
+import com.sjb.securitydoormanager.mqtt.data.Topic
+import com.sjb.securitydoormanager.mqtt.host
+import com.sjb.securitydoormanager.serialport.DataMcuProcess
+import com.sjb.securitydoormanager.serialport.SerialPortManager
 import net.ossrs.yasea.SrsEncodeHandler
 import net.ossrs.yasea.SrsEncodeHandler.SrsEncodeListener
 import net.ossrs.yasea.SrsPublisher
 import net.ossrs.yasea.SrsRecordHandler
 import net.ossrs.yasea.SrsRecordHandler.SrsRecordListener
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
+import org.eclipse.paho.client.mqttv3.MqttCallback
+import org.eclipse.paho.client.mqttv3.MqttMessage
 import java.io.IOException
 import java.net.SocketException
 
@@ -85,7 +94,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
         }
         setChartData()
         binding.scanView.setVertical(true)
-        binding.scanView.setStartFromBootom(false)
+        binding.scanView.setStartFromBottom(false)
         binding.scanView.setAnimDuration(2000)
     }
 
@@ -119,13 +128,47 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
     }
 
 
-
     override fun initData() {
         updateTime()
         TimeThread().start()
         Handler().postDelayed({
             initPermission()
-        }, 1000)
+            Logger.i("去链接Mqtt")
+            val mqttHelper = MqttHelper(this, host, "SD00000001", "123456")
+//            mqttHelper.connect(Topic.TOPIC_MSG, Qos.QOS_TWO, true, object : MqttCallback {
+//                override fun connectionLost(cause: Throwable?) {
+//                    Logger.e("错误" + cause?.message)
+//                }
+//
+//                override fun messageArrived(topic: String?, message: MqttMessage?) {
+//                    // 收到的消息
+//                    Logger.i("topic:$topic,message:${message?.payload}")
+//                    val msg = message?.payload?.let { String(it) }
+//                    Logger.i("收到的消息：$msg")
+//                    msg?.let {
+//                        val index=msg.indexOf("{")
+//                        if (index<1){
+//                            Logger.i("Mqtt收到未知消息")
+//                            return
+//                        }
+//                        // 前面的路由
+//                        val path=msg.substring(0,index).trim()
+//                        // 具体的json消息体
+//                        val json=msg.substring(index)
+//                        Logger.i("path:$path,json:$json")
+//                    }
+//                }
+//
+//                override fun deliveryComplete(token: IMqttDeliveryToken?) {
+//                    Logger.i("token:${token?.message}")
+//                }
+//            })
+            val serialManager=SerialPortManager.instance
+            val mcuProcess=DataMcuProcess()
+            serialManager.init()
+            serialManager.setIData(mcuProcess)
+            serialManager.startRead()
+        }, 3000)
 
     }
 
@@ -170,6 +213,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
      * 初始化推流的相关配置
      */
     private fun initPublish() {
+        //binding.curCameraView.setPreviewOrientation(Configuration.ORIENTATION_LANDSCAPE)
         mPublisher = SrsPublisher(binding.curCameraView)
         mPublisher?.let {
             it.setEncodeHandler(SrsEncodeHandler(this))
@@ -178,7 +222,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
             it.setPreviewResolution(mWidth, mHeight)
             it.setOutputResolution(mHeight, mWidth) // 这里要和preview反过来
             it.setVideoHDMode()
-            it.setScreenOrientation(2)
+            it.setScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
             // 开启预览
             it.startCamera()
             it.switchToHardEncoder()
@@ -249,6 +293,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
             mPublisher?.stopCamera()
             mPublisher?.stopPublish()
         }
+        SerialPortManager.instance.onDestroy()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -293,43 +338,43 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
     }
 
     override fun onRtmpVideoFpsChanged(fps: Double) {
-        Logger.i("rtmp video fps:$fps")
+//        Logger.i("rtmp video fps:$fps")
     }
 
     override fun onRtmpVideoBitrateChanged(bitrate: Double) {
-        Logger.i("rtmp video bitrate:$bitrate ")
+        //  Logger.i("rtmp video bitrate:$bitrate ")
     }
 
     override fun onRtmpAudioBitrateChanged(bitrate: Double) {
-        Logger.i("rtmp audio bitrate:$bitrate ")
+//        Logger.i("rtmp audio bitrate:$bitrate ")
     }
 
     override fun onRtmpSocketException(e: SocketException?) {
-        Logger.e("rtmp socket:$e")
+        //  Logger.e("rtmp socket:$e")
     }
 
     override fun onRtmpIOException(e: IOException?) {
-        Logger.e("rtmp IO:$e")
+        //  Logger.e("rtmp IO:$e")
     }
 
     override fun onRtmpIllegalArgumentException(e: IllegalArgumentException?) {
-        Logger.e("rtmp:$e")
+        //  Logger.e("rtmp:$e")
     }
 
     override fun onRtmpIllegalStateException(e: IllegalStateException?) {
-        Logger.e("rtmp:$e")
+        //  Logger.e("rtmp:$e")
     }
 
     override fun onNetworkWeak() {
-        Logger.e("网络不稳定！！！")
+//        Logger.e("网络不稳定！！！")
     }
 
     override fun onNetworkResume() {
-        Logger.i("网络正在恢复...")
+        //  Logger.i("网络正在恢复...")
     }
 
     override fun onEncodeIllegalArgumentException(e: IllegalArgumentException?) {
-        Logger.e("EncodeIllegalArgumentException:$e")
+        // Logger.e("EncodeIllegalArgumentException:$e")
     }
 
     override fun onRecordPause() {
