@@ -18,12 +18,12 @@ class SerialPortManager private constructor() {
     /**
      * 串口地址
      */
-    private var path: String? = "/dev/ttyS4"
+    private var path: String? = "/dev/ttyS3"
 
     /**
      * 波特率
      */
-    private var baudrate: Int = 9600
+    private var baudrate: Int = 115200
 
     /**
      * 输入流，读取信息
@@ -41,6 +41,36 @@ class SerialPortManager private constructor() {
      * 读取线程
      */
     private var readThread: ReadThread? = null
+
+    private val testByteArray = byteArrayOf(
+        0x0D,
+        0x0A,
+        0x1A,
+        0x01,
+        0x01,
+        0x02,
+        0x69,
+        0x02,
+        0x17,
+        0x0F,
+        0xFE.toByte(),
+        0x0C,
+        0x6D,
+        0x09,
+        0x06,
+        0x06,
+        0x34,
+        0x04,
+        0xCA.toByte(),
+        0x03,
+        0x91.toByte(),
+        0x03,
+        0x04,
+        0x02,
+        0x1D,
+        0x02,
+        0x9C.toByte()
+    )
 
     companion object {
         val instance: SerialPortManager by lazy(mode = LazyThreadSafetyMode.NONE) {
@@ -69,10 +99,16 @@ class SerialPortManager private constructor() {
     }
 
     fun init() {
-        serialPort = SerialPort.newBuilder(path, baudrate).build()
-        mInputStream = serialPort?.inputStream
-        mOutputStream = serialPort?.outputStream
-        Logger.i("串口初始化：$path,$baudrate")
+        kotlin.runCatching {
+            serialPort = SerialPort.newBuilder(path, baudrate).build()
+        }.onSuccess {
+            mInputStream = serialPort?.inputStream
+            mOutputStream = serialPort?.outputStream
+            Logger.i("串口初始化：$path,$baudrate")
+        }.onFailure {
+            Logger.e("串口初始化失败：${it.message}")
+        }
+
     }
 
     /**
@@ -83,6 +119,20 @@ class SerialPortManager private constructor() {
             readThread = ReadThread()
         }
         readThread?.start()
+       // WriteThread().start()
+    }
+
+
+    /**
+     * 给串口发送消息
+     */
+    fun sendMsg(msg: ByteArray) {
+        kotlin.runCatching {
+            mOutputStream?.write(msg)
+        }.onFailure {
+            Logger.e("写入错误：${it.message}")
+        }
+
     }
 
     /**
@@ -113,27 +163,37 @@ class SerialPortManager private constructor() {
                 if (isReadStop) {
                     break
                 }
-               // sleep(200)
+                // sleep(200)
                 kotlin.runCatching {
                     val buffer = ByteArray(30)
                     mInputStream?.let {
                         ret = it.read(buffer)
                         if (ret > 0) {
-                            // 数据回调
-//                            Logger.i(
-//                                "serialPort receive:${
-//                                    HexUtil.formatHexString(buffer,true)
-//                                }"
-//                            )
                             mIDataProc?.onDataReceive(buffer, ret)
                         }
                     }
                 }.onFailure {
                     Logger.e("报错信息：${it.message},${it.localizedMessage}")
+                    init()
                 }
+
             }
         }
     }
+
+//    inner class WriteThread : Thread() {
+//        override fun run() {
+//            super.run()
+//            while (true) {
+//                sleep(10)
+//                runCatching {
+//                    mOutputStream?.write(testByteArray)
+//                }.onFailure {
+//                    Logger.e("写入错误：${it.message}")
+//                }
+//            }
+//        }
+//    }
 
 
 }

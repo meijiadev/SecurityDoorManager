@@ -10,6 +10,8 @@ import com.itfitness.mqttlibrary.MqttAndroidClient
 import com.orhanobut.logger.Logger
 import com.sjb.securitydoormanager.mqtt.data.Qos
 import com.sjb.securitydoormanager.mqtt.data.Topic
+import com.sjb.securitydoormanager.mqtt.mode.AlarmInfo
+import com.sjb.securitydoormanager.mqtt.mode.DevRecord
 import com.sjb.securitydoormanager.mqtt.mode.DeviceStatus
 import com.sjb.securitydoormanager.mqtt.mode.MessageEvent
 import org.eclipse.paho.client.mqttv3.IMqttActionListener
@@ -24,7 +26,7 @@ import java.util.UUID
  * date: 2023/1/30 15:33
  * desc: MqttHelper mqtt业务相关工具类
  */
-const val host = "tcp://192.168.3.5:1883"
+const val host = "tcp://192.168.2.240:1883"
 
 class MqttHelper {
 
@@ -35,15 +37,14 @@ class MqttHelper {
     private var mqttActionListener: IMqttActionListener? = null
 
     // 发布的主题
-     val topicSend = "securityDoor/pub/SD00000001"
+    val topicSend = "securityDoor/pub/SD00000001"
+
     // 订阅的主题
-     val topicRec = "securityDoor/sub/SD00000001"
+    val topicRec = "securityDoor/sub/SD00000001"
 
+    val sn = "SD00000001"
 
-
-
-
-    constructor(context: Context, serverUrl: String, name: String, pass: String) {
+    constructor(context: Context, serverUrl: String, name: String) {
         val macAddress = DeviceUtils.getAndroidID()
         val clientId = if (!TextUtils.isEmpty(macAddress)) {
             macAddress
@@ -56,7 +57,7 @@ class MqttHelper {
             connectionTimeout = 30
             keepAliveInterval = 10
             userName = name
-            password = pass.toCharArray()
+            password = DES3Util.createPass(sn).toCharArray()
         }
 
         val jsonObject = JsonObject()
@@ -74,7 +75,6 @@ class MqttHelper {
                 override fun onSuccess(asyncActionToken: IMqttToken?) {
                     Logger.i("Mqtt 连接成功")
                     subscribe(topic, qos)
-
                 }
 
                 override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
@@ -93,12 +93,18 @@ class MqttHelper {
      * 订阅
      */
     private fun subscribe(topic: Topic, qos: Qos) {
-        mqttClient.subscribe(topic.value(),qos.value(),null,object :IMqttActionListener{
+        mqttClient.subscribe(topic.value(), qos.value(), null, object : IMqttActionListener {
             override fun onSuccess(asyncActionToken: IMqttToken?) {
                 Logger.i("subscribe success：${asyncActionToken.toString()}")
-                val devStatus=DeviceStatus(MessageEvent.getUUID(),1,DateUtil.getCurrentDateTime(),"","v1.0.0")
-                val msg=MessageEvent.MsgType.DOOR_CONNECT.type+Gson().toJson(devStatus)
-                publish(qos,msg)
+                val devStatus = DeviceStatus(
+                    MessageEvent.getUUID(),
+                    1,
+                    DateUtil.getCurrentDateTime(),
+                    "",
+                    "v1.0.0"
+                )
+                val msg = MessageEvent.MsgType.DOOR_CONNECT.type + Gson().toJson(devStatus)
+                publish(qos, msg)
             }
 
             override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
@@ -108,15 +114,54 @@ class MqttHelper {
     }
 
     /**
+     * 发送消息
+     */
+    private fun publish(message: String) {
+        val msg = MqttMessage()
+        msg.isRetained = false
+        msg.payload = message.toByteArray()
+        msg.qos = Qos.QOS_TWO.value()
+        Logger.i("发布出去的消息：$msg")
+        mqttClient.publish(Topic.TOPIC_SEND.value(), msg)
+    }
+
+    /**
      * 发布消息
      */
-    fun publish( qos: Qos, message: String) {
+    fun publish(qos: Qos, message: String) {
         val msg = MqttMessage()
         msg.isRetained = false
         msg.payload = message.toByteArray()
         msg.qos = qos.value()
         Logger.i("发布出去的消息msg:$msg")
         mqttClient.publish(Topic.TOPIC_SEND.value(), msg)
+    }
+
+    /**
+     * 获取应用场景 /securityDoor/getScenario{"tx":"950637ad-1349-402b-a69e-2473c79e6c31"}
+     */
+    fun getScenario(): String {
+        return "${MessageEvent.MsgType.DOOR_SCENARIO.type}{\"tx\":\"${UUID.randomUUID()}\"}"
+    }
+
+    /**
+     * 上传安检记录
+     */
+    fun uploadRecord(passStatus:Int) {
+        val alarmInfoLs = mutableListOf<AlarmInfo>()
+        alarmInfoLs.add(AlarmInfo("2", "1234", "手机"))
+        alarmInfoLs.add(AlarmInfo("12", "2356", "手机"))
+        val time=DateUtil.getCurrentDateTime()
+        val record = DevRecord(
+            UUID.randomUUID().toString(),
+            alarmInfoLs,
+            "IN",
+            "Phone",
+            passStatus,
+            time
+        )
+        val msg = MessageEvent.MsgType.DOOR_RECORD.type + Gson().toJson(record)
+        publish(msg)
     }
 
     /**

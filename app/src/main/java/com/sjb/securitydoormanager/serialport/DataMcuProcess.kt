@@ -38,6 +38,9 @@ class DataMcuProcess : DataProcBase() {
                         pollQueue(i)
                         // 取出一条完整的命令
                         val oneCmd=Utils.getBytes(buf,i,cmdLen)
+                        DataProtocol.funcCode=oneCmd[0].toInt()
+                        DataProtocol.infraCode=oneCmd[1].toInt()
+
                         val msg= HexUtil.formatHexString(oneCmd,true)
                         Logger.i("serialPort Receive：$msg")
 

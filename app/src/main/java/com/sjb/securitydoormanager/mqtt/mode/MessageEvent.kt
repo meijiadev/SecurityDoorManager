@@ -11,6 +11,7 @@ object MessageEvent {
 
     enum class MsgType(val type:String){
         DOOR_CONNECT("/securityDoor/connect"),
+        DOOR_SCENARIO("/securityDoor/getScenario"),
         DOOR_GET_CONFIG("/securityDoor/getConfig"),
         DOOR_RECORD("/securityDoor/record"),
         DOOR_UPDATE_CONFIG("/securityDoor/updatedConfig")

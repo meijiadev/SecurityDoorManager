@@ -1,16 +1,17 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 }
 
 android {
     namespace 'com.sjb.securitydoormanager'
-    compileSdk 32
+    compileSdk 33   // Android 13
 
     defaultConfig {
         applicationId "com.sjb.securitydoormanager"
         minSdk 23
-        targetSdk 32
+        targetSdk 33  // Android 13
         versionCode 1
         versionName "1.0"
 
@@ -65,4 +66,10 @@ dependencies {
     // google 的Json库
     implementation 'com.google.code.gson:gson:2.8.0'
     implementation group: 'commons-codec', name: 'commons-codec', version: '1.11'
+
+    // 数据库Room
+    implementation "androidx.room:room-runtime:2.2.5"
+    //kotlin下使用
+    kapt "androidx.room:room-compiler:2.2.5"
+
 }

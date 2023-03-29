@@ -16,6 +16,15 @@ data class DeviceStatus(
     val version: String
 )
 
+/**
+ * 安检门获取应用场景
+ */
+data class Scenario(
+    val scenario: String,
+    val config: Config
+)
+
+
 // 设备配置
 data class DevConfig(
     val tx: String,
@@ -32,13 +41,14 @@ data class Config(
 data class DevRecord(
     val tx: String,
     val alarmInfo: List<AlarmInfo>,
-    val passMode: String,                   // 通过方式 in/out
-    val passStatus: String,                 // 通过状态
+    val passMode: String,                   // 通过方式 IN/OUT
+    val scenario: String,             // 应用场景
+    val passStatus: Int,                 // 通过状态  0 -未通过 1- 通过
     val passTime: String                   // 通过时间
 )
 
 data class AlarmInfo(
     val area: String,                    // 区位
-    val signalData: String,             // 信号量
+    val signal: String,             // 信号量
     val suspectedItem: String           // 疑似物品
 )

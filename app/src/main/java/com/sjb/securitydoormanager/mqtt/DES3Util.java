@@ -53,6 +53,12 @@ public class DES3Util {
         System.out.println(passwordDecode);
     }
 
+    public static String createPass(String sn){
+        long timestamp = System.currentTimeMillis();
+        String passwordEncode = des3Encode("{\"username\":\""+sn+"\",\"timestamp\":"+ timestamp+"}");
+        return passwordEncode;
+    }
+
     /**
      * 3DES解密
      *

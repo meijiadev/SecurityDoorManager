@@ -22,6 +22,7 @@ import com.sjb.base.base.BaseViewModel
 import com.sjb.securitydoormanager.constant.PassInfoManager
 import com.sjb.securitydoormanager.R
 import com.sjb.securitydoormanager.databinding.ActivityHomeBinding
+import com.sjb.securitydoormanager.mqtt.DES3Util
 import com.sjb.securitydoormanager.mqtt.MqttHelper
 import com.sjb.securitydoormanager.mqtt.data.Qos
 import com.sjb.securitydoormanager.mqtt.data.Topic
@@ -51,6 +52,8 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
     private val mHeight = 720
 
     private val rtmpUrl = "rtmp://112.74.191.164:1935/live/123456789"
+
+    private var mqttHelper: MqttHelper? = null
 
 
     /**
@@ -134,37 +137,36 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
         Handler().postDelayed({
             initPermission()
             Logger.i("去链接Mqtt")
-            val mqttHelper = MqttHelper(this, host, "SD00000001", "123456")
-//            mqttHelper.connect(Topic.TOPIC_MSG, Qos.QOS_TWO, true, object : MqttCallback {
-//                override fun connectionLost(cause: Throwable?) {
-//                    Logger.e("错误" + cause?.message)
-//                }
-//
-//                override fun messageArrived(topic: String?, message: MqttMessage?) {
-//                    // 收到的消息
-//                    Logger.i("topic:$topic,message:${message?.payload}")
-//                    val msg = message?.payload?.let { String(it) }
-//                    Logger.i("收到的消息：$msg")
-//                    msg?.let {
-//                        val index=msg.indexOf("{")
-//                        if (index<1){
-//                            Logger.i("Mqtt收到未知消息")
-//                            return
-//                        }
-//                        // 前面的路由
-//                        val path=msg.substring(0,index).trim()
-//                        // 具体的json消息体
-//                        val json=msg.substring(index)
-//                        Logger.i("path:$path,json:$json")
-//                    }
-//                }
-//
-//                override fun deliveryComplete(token: IMqttDeliveryToken?) {
-//                    Logger.i("token:${token?.message}")
-//                }
-//            })
-            val serialManager=SerialPortManager.instance
-            val mcuProcess=DataMcuProcess()
+            mqttHelper = MqttHelper(this, host, "SD00000001")
+            mqttHelper?.connect(Topic.TOPIC_MSG, Qos.QOS_TWO, true, object : MqttCallback {
+                override fun connectionLost(cause: Throwable?) {
+                    Logger.e("错误" + cause?.message)
+                }
+
+                override fun messageArrived(topic: String?, message: MqttMessage?) {
+                    // 收到的消息
+                    val msg = message?.payload?.let { String(it) }
+                    Logger.i("收到的消息：$msg")
+                    msg?.let {
+                        val index = msg.indexOf("{")
+                        if (index < 1) {
+                            Logger.i("Mqtt收到未知消息")
+                            return
+                        }
+                        // 前面的路由
+                        val path = msg.substring(0, index).trim()
+                        // 具体的json消息体
+                        val json = msg.substring(index)
+                        Logger.i("path:$path,json:$json")
+                    }
+                }
+
+                override fun deliveryComplete(token: IMqttDeliveryToken?) {
+                    Logger.i("token:${token?.message}")
+                }
+            })
+            val serialManager = SerialPortManager.instance
+            val mcuProcess = DataMcuProcess()
             serialManager.init()
             serialManager.setIData(mcuProcess)
             serialManager.startRead()
@@ -179,12 +181,18 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
             PassInfoManager.hasPass = PassInfoManager.hasPass + 1
             setChartData()
             binding.scanView.startScanAnim()
+            mqttHelper?.let {
+                it.uploadRecord(1)
+            }
         }
 
         binding.phoneAlarmTv.setOnClickListener {
             PassInfoManager.totalPass = PassInfoManager.totalPass + 1
             PassInfoManager.phoneAlarms = PassInfoManager.phoneAlarms + 1
             setChartData()
+            mqttHelper?.let {
+                it.uploadRecord(0)
+            }
         }
 
         binding.otherAlarmTv.setOnClickListener {
@@ -208,7 +216,6 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
             DateUtil.getCurrentDateTime(DateUtil.Y_M_D_H_M) + " " + DateUtil.getCurrentDayOfWeekCH()
     }
 
-
     /**
      * 初始化推流的相关配置
      */
@@ -230,7 +237,6 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
         }
 
     }
-
 
     /**
      * 初始化权限请求
