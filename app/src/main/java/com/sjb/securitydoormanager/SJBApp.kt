@@ -7,8 +7,10 @@ import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.sjb.base.base.BaseApplication
 
+
+
 class SJBApp : BaseApplication() {
-    companion object{
+    companion object {
         lateinit var context: Context
 
     }
@@ -19,5 +21,9 @@ class SJBApp : BaseApplication() {
         Logger.addLogAdapter(AndroidLogAdapter())
         ToastUtils.init(this)
         ToastUtils.setStyle(BlackToastStyle())
+
+
     }
+
+
 }

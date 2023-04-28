@@ -72,12 +72,12 @@ class SerialPortManager private constructor() {
         0x9C.toByte()
     )
 
+
     companion object {
         val instance: SerialPortManager by lazy(mode = LazyThreadSafetyMode.NONE) {
             SerialPortManager()
         }
     }
-
 
     fun setIData(iDataProc: IDataProc) {
         this.mIDataProc = iDataProc
@@ -88,7 +88,6 @@ class SerialPortManager private constructor() {
      */
     fun setPath(path: String) {
         this.path = path
-
     }
 
     /**

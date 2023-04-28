@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
 }
 
+
 android {
     namespace 'com.sjb.securitydoormanager'
     compileSdk 33   // Android 13
@@ -16,6 +17,9 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters "armeabi-v7a"
+        }
     }
 
     buildTypes {
@@ -24,6 +28,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -41,8 +51,11 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation files('libs\\zkandroidcore.jar')
+    implementation files('libs\\zkandroididcardreader.jar')
     implementation project(':base')
     implementation project(path: ':library')
+    implementation project(':veriface')
 //    implementation project(':liveplayer')
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
@@ -65,11 +78,12 @@ dependencies {
     implementation 'com.blankj:utilcodex:1.31.0'
     // google 的Json库
     implementation 'com.google.code.gson:gson:2.8.0'
-    implementation group: 'commons-codec', name: 'commons-codec', version: '1.11'
 
     // 数据库Room
     implementation "androidx.room:room-runtime:2.2.5"
     //kotlin下使用
     kapt "androidx.room:room-compiler:2.2.5"
+
+    implementation 'com.github.li-xiaojun:XPopup:2.8.0'
 
 }

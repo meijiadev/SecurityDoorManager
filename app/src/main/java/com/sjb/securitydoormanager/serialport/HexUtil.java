@@ -67,6 +67,8 @@ public class HexUtil {
             throw new RuntimeException("Odd number of characters.");
         }
 
+
+
         byte[] out = new byte[len >> 1];
 
         // two characters form the hex value.

@@ -48,7 +48,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     //ui适配
-    api 'com.github.JessYanCoding:AndroidAutoSize:v1.2.1'
+    // api 'com.github.JessYanCoding:AndroidAutoSize:v1.2.1'
+    api 'androidx.percentlayout:percentlayout:1.0.0'
     // 日志框架
     api 'com.orhanobut:logger:2.2.0'
     // viewModel

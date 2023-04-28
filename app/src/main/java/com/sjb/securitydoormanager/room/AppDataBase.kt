@@ -20,6 +20,7 @@ abstract class AppDataBase : RoomDatabase() {
                     instance=it
                 }
             }
+
         }
 
         private fun buildDataBase(context:Context):AppDataBase{

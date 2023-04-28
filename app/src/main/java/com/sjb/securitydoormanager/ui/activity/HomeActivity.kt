@@ -3,72 +3,81 @@ package com.sjb.securitydoormanager.ui.activity
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import android.graphics.Color
+import android.graphics.*
+import android.hardware.Camera
 import android.os.Build
 import android.os.Handler
+import android.util.DisplayMetrics
+import android.view.Surface
+import android.view.SurfaceHolder
 import com.android.util.DateUtil
-import com.github.faucamp.simplertmp.RtmpHandler
-import com.github.faucamp.simplertmp.RtmpHandler.RtmpListener
+import com.arcsoft.idcardveri.IdCardVerifyError
+import com.arcsoft.idcardveri.IdCardVerifyManager
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.kunminx.architecture.ui.callback.UnPeekLiveData
+import com.lxj.xpopup.XPopup
+import com.lxj.xpopup.enums.PopupAnimation
 import com.orhanobut.logger.Logger
 import com.permissionx.guolindev.PermissionX
 import com.sjb.base.base.BaseMvActivity
-import com.sjb.base.base.BaseViewModel
-import com.sjb.securitydoormanager.constant.PassInfoManager
 import com.sjb.securitydoormanager.R
+import com.sjb.securitydoormanager.constant.PassInfoManager
 import com.sjb.securitydoormanager.databinding.ActivityHomeBinding
-import com.sjb.securitydoormanager.mqtt.DES3Util
-import com.sjb.securitydoormanager.mqtt.MqttHelper
-import com.sjb.securitydoormanager.mqtt.data.Qos
-import com.sjb.securitydoormanager.mqtt.data.Topic
-import com.sjb.securitydoormanager.mqtt.host
+import com.sjb.securitydoormanager.idr.IDCardInfo
+import com.sjb.securitydoormanager.media.MediaPlayerManager
+import com.sjb.securitydoormanager.media.mqtt.MqttHelper
+import com.sjb.securitydoormanager.media.mqtt.TOPIC_MSG
+import com.sjb.securitydoormanager.media.mqtt.data.Qos
+import com.sjb.securitydoormanager.media.mqtt.host
+import com.sjb.securitydoormanager.media.mqtt.sn
 import com.sjb.securitydoormanager.serialport.DataMcuProcess
 import com.sjb.securitydoormanager.serialport.SerialPortManager
-import net.ossrs.yasea.SrsEncodeHandler
-import net.ossrs.yasea.SrsEncodeHandler.SrsEncodeListener
-import net.ossrs.yasea.SrsPublisher
-import net.ossrs.yasea.SrsRecordHandler
-import net.ossrs.yasea.SrsRecordHandler.SrsRecordListener
+import com.sjb.securitydoormanager.ui.dialog.IDCardDialog
+import com.sjb.securitydoormanager.ui.model.HomeViewModel
+import com.sjb.securitydoormanager.ui.model.IDFaceViewModel
+import com.sjb.securitydoormanager.ui.model.MqttSerModel
+import com.sjb.securitydoormanager.veriface.DrawUtils
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallback
 import org.eclipse.paho.client.mqttv3.MqttMessage
-import java.io.IOException
-import java.net.SocketException
+import java.util.*
 
-class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpListener,
-    SrsEncodeListener, SrsRecordListener {
+class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), SurfaceHolder.Callback {
 
     private var pieDataSet: PieDataSet? = null
 
     private var updateUIAction = UnPeekLiveData<Int>()
-
-    private var mPublisher: SrsPublisher? = null
-    private val mWidth = 1270
-    private val mHeight = 720
-
-    private val rtmpUrl = "rtmp://112.74.191.164:1935/live/123456789"
-
-    private var mqttHelper: MqttHelper? = null
-
 
     /**
      *权限请求是否通过
      */
     private var isPermissionGranted = false
 
+    private lateinit var faceModel: IDFaceViewModel
+    private lateinit var mqttSerModel: MqttSerModel
+
+
     override fun getViewBinding(): ActivityHomeBinding {
         return ActivityHomeBinding.inflate(layoutInflater)
-
     }
 
 
     override fun initParam() {
-
+        faceModel = getActivityViewModel(IDFaceViewModel::class.java)
+        mqttSerModel = getActivityViewModel(MqttSerModel::class.java)
+        faceModel.cardFaceCompareResult.observe(this) {
+            if (it == true) {
+                toast("人证验证成功！")
+                speakIdCardSuccess()
+            } else {
+                toast("人证验证失败！")
+                speakIdCardFailed()
+            }
+        }
     }
 
     override fun initView() {
@@ -99,8 +108,11 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
         binding.scanView.setVertical(true)
         binding.scanView.setStartFromBottom(false)
         binding.scanView.setAnimDuration(2000)
-    }
 
+        binding.surfaceView.holder.addCallback(this)
+        binding.surfaceViewRect.setZOrderMediaOverlay(true)
+        binding.surfaceViewRect.holder.setFormat(PixelFormat.TRANSLUCENT)
+    }
 
     /**
      * 设置扇形图的数据
@@ -134,44 +146,39 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
     override fun initData() {
         updateTime()
         TimeThread().start()
+        viewModel.initIDR()
         Handler().postDelayed({
             initPermission()
-            Logger.i("去链接Mqtt")
-            mqttHelper = MqttHelper(this, host, "SD00000001")
-            mqttHelper?.connect(Topic.TOPIC_MSG, Qos.QOS_TWO, true, object : MqttCallback {
-                override fun connectionLost(cause: Throwable?) {
-                    Logger.e("错误" + cause?.message)
-                }
-
-                override fun messageArrived(topic: String?, message: MqttMessage?) {
-                    // 收到的消息
-                    val msg = message?.payload?.let { String(it) }
-                    Logger.i("收到的消息：$msg")
-                    msg?.let {
-                        val index = msg.indexOf("{")
-                        if (index < 1) {
-                            Logger.i("Mqtt收到未知消息")
-                            return
-                        }
-                        // 前面的路由
-                        val path = msg.substring(0, index).trim()
-                        // 具体的json消息体
-                        val json = msg.substring(index)
-                        Logger.i("path:$path,json:$json")
-                    }
-                }
-
-                override fun deliveryComplete(token: IMqttDeliveryToken?) {
-                    Logger.i("token:${token?.message}")
-                }
-            })
             val serialManager = SerialPortManager.instance
             val mcuProcess = DataMcuProcess()
             serialManager.init()
             serialManager.setIData(mcuProcess)
             serialManager.startRead()
-        }, 3000)
+            viewModel.startRead()
+        }, 1000)
 
+        // livedata
+        viewModel.idCardLiveData.observe(this) {
+            Logger.e("接收身份证信息")
+            showCardDialog(it)
+            it.cardPic?.let { bitmap ->
+                inputCardImage(bitmap)
+            }
+        }
+    }
+
+    private var idCardDialog: IDCardDialog? = null
+    private fun showCardDialog(idCardInfo: IDCardInfo) {
+        if (idCardDialog == null || idCardDialog?.isShow == false) {
+            idCardDialog = IDCardDialog(this)
+                .setCardInfo(idCardInfo)
+            XPopup.Builder(this)
+                .isViewMode(true)
+                .popupAnimation(PopupAnimation.TranslateFromBottom)
+                .asCustom(idCardDialog)
+                .show()
+                .delayDismiss(3000)
+        }
     }
 
 
@@ -181,8 +188,8 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
             PassInfoManager.hasPass = PassInfoManager.hasPass + 1
             setChartData()
             binding.scanView.startScanAnim()
-            mqttHelper?.let {
-                it.uploadRecord(1)
+            mqttSerModel.mqttHelper?.let {
+                it.uploadRecord(0, "IN")
             }
         }
 
@@ -190,15 +197,21 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
             PassInfoManager.totalPass = PassInfoManager.totalPass + 1
             PassInfoManager.phoneAlarms = PassInfoManager.phoneAlarms + 1
             setChartData()
-            mqttHelper?.let {
-                it.uploadRecord(0)
+            mqttSerModel.mqttHelper?.let {
+                it.uploadRecord(1, "IN")
+                // speak()
             }
+            speak()
         }
 
         binding.otherAlarmTv.setOnClickListener {
             PassInfoManager.totalPass = PassInfoManager.totalPass + 1
             PassInfoManager.otherAlarms = PassInfoManager.otherAlarms + 1
             setChartData()
+            mqttSerModel.mqttHelper?.let {
+                it.uploadRecord(0, "OUT")
+            }
+            faceModel.executeIDCardVer()
         }
     }
 
@@ -210,32 +223,37 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
         }
     }
 
+    /**
+     * 更新左上角的时间
+     */
     @SuppressLint("SetTextI18n")
     private fun updateTime() {
         binding.timeTv.text =
             DateUtil.getCurrentDateTime(DateUtil.Y_M_D_H_M) + " " + DateUtil.getCurrentDayOfWeekCH()
     }
 
-    /**
-     * 初始化推流的相关配置
-     */
-    private fun initPublish() {
-        //binding.curCameraView.setPreviewOrientation(Configuration.ORIENTATION_LANDSCAPE)
-        mPublisher = SrsPublisher(binding.curCameraView)
-        mPublisher?.let {
-            it.setEncodeHandler(SrsEncodeHandler(this))
-            it.setRtmpHandler(RtmpHandler(this))
-            it.setRecordHandler(SrsRecordHandler(this))
-            it.setPreviewResolution(mWidth, mHeight)
-            it.setOutputResolution(mHeight, mWidth) // 这里要和preview反过来
-            it.setVideoHDMode()
-            it.setScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
-            // 开启预览
-            it.startCamera()
-            it.switchToHardEncoder()
-            it.startPublish(rtmpUrl)
-        }
 
+    /**
+     *  疑似电子物品
+     */
+    fun speak() {
+        MediaPlayerManager.setDataSource(this, R.raw.electronic_goods)
+    }
+
+    /**
+     * 身份识别成功
+     */
+    private fun speakIdCardSuccess() {
+        MediaPlayerManager.setDataSource(this, R.raw.idcard_success)
+        Logger.e("身份识别成功")
+    }
+
+    /**
+     * 身份识别失败
+     */
+    private fun speakIdCardFailed() {
+        MediaPlayerManager.setDataSource(this, R.raw.idcard_failed)
+        Logger.e("身份识别失败")
     }
 
     /**
@@ -245,25 +263,33 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
         // 安卓版本是否大于 6.0
         if (Build.VERSION.SDK_INT >= 23) {
             // 检查是否开启权限
-            if (!PermissionX.isGranted(this, Manifest.permission.CAMERA) || !PermissionX.isGranted(
+            if (!PermissionX.isGranted(
+                    this,
+                    Manifest.permission.CAMERA
+                ) || !PermissionX.isGranted(
                     this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) || !PermissionX.isGranted(
                     this,
                     Manifest.permission.READ_EXTERNAL_STORAGE
-                ) || !PermissionX.isGranted(this, Manifest.permission.RECORD_AUDIO)
+                ) || !PermissionX.isGranted(
+                    this,
+                    Manifest.permission.RECORD_AUDIO
+                ) || !PermissionX.isGranted(this, Manifest.permission.READ_PHONE_STATE)
             ) {
                 // 权限没有开启
                 PermissionX.init(this).permissions(
                     Manifest.permission.CAMERA,
                     Manifest.permission.RECORD_AUDIO,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_PHONE_STATE
                 ).request { allGranted, grantedList, deniedList ->
                     if (allGranted) {
                         isPermissionGranted = true
                         Logger.i("所有申请都已通过")
-                        initPublish()
+                        faceModel.initIdCardVerify()
+
                     } else {
                         isPermissionGranted = false
                         Logger.i("拒绝了以下的权限：$deniedList")
@@ -271,41 +297,35 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
                 }
             } else {
                 isPermissionGranted = true
-                initPublish()
+                faceModel.initIdCardVerify()
+
             }
         } else {
             isPermissionGranted = true
-            initPublish()
+            faceModel.initIdCardVerify()
         }
     }
 
-
-    override fun onStart() {
-        super.onStart()
-        if (mPublisher?.camera == null && isPermissionGranted) {
-            mPublisher?.startPublish(rtmpUrl)
-            mPublisher?.startCamera()
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-    }
 
     override fun onStop() {
         super.onStop()
-        if (mPublisher?.camera == null && isPermissionGranted) {
-            mPublisher?.stopCamera()
-            mPublisher?.stopPublish()
-        }
         SerialPortManager.instance.onDestroy()
+    }
+
+    override fun onDestroy() {
+        //反初始化
+        //activeService?.shutdown()
+        IdCardVerifyManager.getInstance().unInit()
+        if (camera != null) {
+            camera?.release()
+        }
+        super.onDestroy()
+        viewModel.closeDevice()
+
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        mPublisher?.startPublish(rtmpUrl)
-        mPublisher?.startCamera()
     }
 
 
@@ -319,92 +339,131 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, BaseViewModel>(), RtmpL
         }
     }
 
-    override fun onRtmpConnecting(msg: String?) {
-        toast(msg)
+    private fun inputCardImage(cardData: Bitmap) {
+        val width = cardData.width / 4 * 4
+        val height = cardData.height / 2 * 2
+        var nv21Data = DrawUtils.bitmapToNav21(cardData, width, height)
+        //
+        if (faceModel.isInit) {
+            Logger.e("图片的宽高：${width},${height}")
+            val result =
+                IdCardVerifyManager.getInstance()
+                    .inputIdCardData(nv21Data, width, height)
+            Logger.e("input image result:${result.errCode}")
+        }
     }
 
-    override fun onRtmpConnected(msg: String?) {
-        toast(msg)
+
+    private var camereId = 0
+    private var camera: Camera? = null
+    private var displayOrientation = 0
+    override fun surfaceCreated(holder: SurfaceHolder) {
+        camereId = Camera.getNumberOfCameras() - 1
+        camera = Camera.open(camereId)
+        kotlin.runCatching {
+            val metrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(metrics)
+            val parameters = camera?.getParameters()
+            parameters?.let {
+                val previewSize: Camera.Size =
+                    getBestSupportedSize(it.supportedPreviewSizes, metrics)
+                parameters.setPreviewSize(previewSize.width, previewSize.height)
+                camera?.setParameters(parameters)
+                val mWidth = previewSize.width
+                val mHeight = previewSize.height
+                displayOrientation = getCameraOri(windowManager.defaultDisplay.rotation)
+                camera?.setDisplayOrientation(displayOrientation)
+                Logger.e("当前实时画面")
+                camera?.setPreviewDisplay(holder)
+                camera?.setPreviewCallback { data, camera ->
+                    if (faceModel.isInit) {
+                        val result = IdCardVerifyManager.getInstance()
+                            .onPreviewData(data, mWidth, mHeight, true)
+                        if (result.errCode != IdCardVerifyError.OK) {
+                            when (result.errCode) {
+                                65539 -> {
+                                    // Logger.i("未检测到人脸")
+                                }
+                            }
+                        }
+
+                        binding.surfaceViewRect?.let { surfaceRect ->
+                            val canvas: Canvas = surfaceRect.holder.lockCanvas()
+                            canvas.drawColor(0, PorterDuff.Mode.CLEAR)
+                            val rect = result.faceRect
+                            rect?.let {
+                                val adjustedRect: Rect? = DrawUtils.adjustRect(
+                                    rect,
+                                    mWidth,
+                                    mHeight,
+                                    canvas.width,
+                                    canvas.height,
+                                    displayOrientation,
+                                    camereId
+                                )
+                                DrawUtils.drawFaceRect(canvas, adjustedRect, Color.YELLOW, 5)
+                                //画人脸框
+                                //Logger.e("绘制人脸框")
+                            }
+                            surfaceRect.holder.unlockCanvasAndPost(canvas)
+                        }
+                    }
+                }
+                camera?.startPreview()
+            }
+        }.onFailure {
+            Logger.e("出错：${it.message}")
+            camera = null
+        }
     }
 
-    override fun onRtmpVideoStreaming() {
-
-    }
-
-    override fun onRtmpAudioStreaming() {
-
-    }
-
-    override fun onRtmpStopped() {
-        toast("rtmp stopped")
-    }
-
-    override fun onRtmpDisconnected() {
-        toast("rtmp disconnected")
-    }
-
-    override fun onRtmpVideoFpsChanged(fps: Double) {
-//        Logger.i("rtmp video fps:$fps")
-    }
-
-    override fun onRtmpVideoBitrateChanged(bitrate: Double) {
-        //  Logger.i("rtmp video bitrate:$bitrate ")
-    }
-
-    override fun onRtmpAudioBitrateChanged(bitrate: Double) {
-//        Logger.i("rtmp audio bitrate:$bitrate ")
-    }
-
-    override fun onRtmpSocketException(e: SocketException?) {
-        //  Logger.e("rtmp socket:$e")
-    }
-
-    override fun onRtmpIOException(e: IOException?) {
-        //  Logger.e("rtmp IO:$e")
-    }
-
-    override fun onRtmpIllegalArgumentException(e: IllegalArgumentException?) {
-        //  Logger.e("rtmp:$e")
-    }
-
-    override fun onRtmpIllegalStateException(e: IllegalStateException?) {
-        //  Logger.e("rtmp:$e")
-    }
-
-    override fun onNetworkWeak() {
-//        Logger.e("网络不稳定！！！")
-    }
-
-    override fun onNetworkResume() {
-        //  Logger.i("网络正在恢复...")
-    }
-
-    override fun onEncodeIllegalArgumentException(e: IllegalArgumentException?) {
-        // Logger.e("EncodeIllegalArgumentException:$e")
-    }
-
-    override fun onRecordPause() {
-
-    }
-
-    override fun onRecordResume() {
-
-    }
-
-    override fun onRecordStarted(msg: String?) {
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
 
     }
 
-    override fun onRecordFinished(msg: String?) {
-
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
+        camera?.setPreviewCallback(null)
+        camera?.stopPreview()
+        camera?.release()
+        camera = null
     }
 
-    override fun onRecordIllegalArgumentException(e: java.lang.IllegalArgumentException?) {
-
+    private fun getBestSupportedSize(
+        sizes: List<Camera.Size>,
+        metrics: DisplayMetrics
+    ): Camera.Size {
+        var bestSize = sizes[0]
+        var screenRatio = metrics.widthPixels.toFloat() / metrics.heightPixels.toFloat()
+        if (screenRatio > 1) {
+            screenRatio = 1 / screenRatio
+        }
+        for (s in sizes) {
+            if (Math.abs(s.height / s.width.toFloat() - screenRatio) < Math.abs(bestSize.height / bestSize.width.toFloat() - screenRatio)) {
+                bestSize = s
+            }
+        }
+        return bestSize
     }
 
-    override fun onRecordIOException(e: IOException?) {
-
+    private fun getCameraOri(rotation: Int): Int {
+        var degrees = rotation * 90
+        when (rotation) {
+            Surface.ROTATION_0 -> degrees = 0
+            Surface.ROTATION_90 -> degrees = 90
+            Surface.ROTATION_180 -> degrees = 180
+            Surface.ROTATION_270 -> degrees = 270
+            else -> {}
+        }
+        var result: Int
+        val info = Camera.CameraInfo()
+        Camera.getCameraInfo(camereId, info)
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (info.orientation + degrees) % 360
+            result = (360 - result) % 360
+        } else {
+            result = (info.orientation - degrees + 360) % 360
+        }
+        return result
     }
 
 

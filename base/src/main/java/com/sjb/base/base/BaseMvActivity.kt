@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.gyf.immersionbar.BarHide
@@ -22,6 +23,7 @@ abstract class BaseMvActivity<V : ViewBinding, VM : BaseViewModel> : AppCompatAc
 
     abstract fun getViewBinding(): V
 
+    private lateinit var mActivityProvider: ViewModelProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +31,14 @@ abstract class BaseMvActivity<V : ViewBinding, VM : BaseViewModel> : AppCompatAc
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         viewModel = createViewModel()
         setContentView(binding.root)
+        mActivityProvider=  ViewModelProvider(this)
         onViewCreated()
     }
 
 
     private fun onViewCreated() {
         initStatus()
+        initParam()
         initView()
         initData()
         initListener()
@@ -57,6 +61,16 @@ abstract class BaseMvActivity<V : ViewBinding, VM : BaseViewModel> : AppCompatAc
      */
     private fun createViewModel(): VM {
         return ViewModelProvider(this).get(getVmClazz(this))
+    }
+
+    /**
+     * 获取Activity作用域的ViewModel
+     */
+    protected fun <T: ViewModel> getActivityViewModel(modelClass:Class<T>):T{
+        if (mActivityProvider==null){
+            mActivityProvider=  ViewModelProvider(this)
+        }
+        return mActivityProvider.get(modelClass)
     }
 
     /**
