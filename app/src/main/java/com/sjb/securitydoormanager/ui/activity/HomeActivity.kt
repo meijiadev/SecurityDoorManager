@@ -29,11 +29,6 @@ import com.sjb.securitydoormanager.constant.PassInfoManager
 import com.sjb.securitydoormanager.databinding.ActivityHomeBinding
 import com.sjb.securitydoormanager.idr.IDCardInfo
 import com.sjb.securitydoormanager.media.MediaPlayerManager
-import com.sjb.securitydoormanager.media.mqtt.MqttHelper
-import com.sjb.securitydoormanager.media.mqtt.TOPIC_MSG
-import com.sjb.securitydoormanager.media.mqtt.data.Qos
-import com.sjb.securitydoormanager.media.mqtt.host
-import com.sjb.securitydoormanager.media.mqtt.sn
 import com.sjb.securitydoormanager.serialport.DataMcuProcess
 import com.sjb.securitydoormanager.serialport.SerialPortManager
 import com.sjb.securitydoormanager.ui.dialog.IDCardDialog
@@ -41,9 +36,7 @@ import com.sjb.securitydoormanager.ui.model.HomeViewModel
 import com.sjb.securitydoormanager.ui.model.IDFaceViewModel
 import com.sjb.securitydoormanager.ui.model.MqttSerModel
 import com.sjb.securitydoormanager.veriface.DrawUtils
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
-import org.eclipse.paho.client.mqttv3.MqttCallback
-import org.eclipse.paho.client.mqttv3.MqttMessage
+import java.io.ByteArrayOutputStream
 import java.util.*
 
 class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), SurfaceHolder.Callback {
@@ -60,6 +53,21 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
     private lateinit var faceModel: IDFaceViewModel
     private lateinit var mqttSerModel: MqttSerModel
 
+    /**
+     * 身份证相关信息
+     */
+    private var mIDCardInfo: IDCardInfo? = null
+
+    /**
+     * 是否需要抓拍
+     */
+    private var hasCapture = false
+
+    /**
+     * 抓拍的图片
+     */
+    private var captureBitmap: Bitmap? = null
+
 
     override fun getViewBinding(): ActivityHomeBinding {
         return ActivityHomeBinding.inflate(layoutInflater)
@@ -70,12 +78,27 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
         faceModel = getActivityViewModel(IDFaceViewModel::class.java)
         mqttSerModel = getActivityViewModel(MqttSerModel::class.java)
         faceModel.cardFaceCompareResult.observe(this) {
+            hasCapture = true
             if (it == true) {
                 toast("人证验证成功！")
+                mIDCardInfo?.identifyStatus = "success"
+                mIDCardInfo?.identifyMsg = "人脸识别成功"
                 speakIdCardSuccess()
             } else {
                 toast("人证验证失败！")
+                mIDCardInfo?.identifyStatus = "failed"
+                mIDCardInfo?.identifyMsg = "人脸识别失败"
                 speakIdCardFailed()
+            }
+        }
+
+        // livedata
+        viewModel.idCardLiveData.observe(this) {
+            Logger.e("接收身份证信息")
+            mIDCardInfo = it
+            showCardDialog(it)
+            it.cardPic?.let { bitmap ->
+                inputCardImage(bitmap)
             }
         }
     }
@@ -155,16 +178,9 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
             serialManager.setIData(mcuProcess)
             serialManager.startRead()
             viewModel.startRead()
+            mqttSerModel.initMqttSer()
         }, 1000)
 
-        // livedata
-        viewModel.idCardLiveData.observe(this) {
-            Logger.e("接收身份证信息")
-            showCardDialog(it)
-            it.cardPic?.let { bitmap ->
-                inputCardImage(bitmap)
-            }
-        }
     }
 
     private var idCardDialog: IDCardDialog? = null
@@ -188,19 +204,15 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
             PassInfoManager.hasPass = PassInfoManager.hasPass + 1
             setChartData()
             binding.scanView.startScanAnim()
-            mqttSerModel.mqttHelper?.let {
-                it.uploadRecord(0, "IN")
-            }
+            mqttSerModel.uploadRecord(0, "IN", mIDCardInfo, captureBitmap)
+
         }
 
         binding.phoneAlarmTv.setOnClickListener {
             PassInfoManager.totalPass = PassInfoManager.totalPass + 1
             PassInfoManager.phoneAlarms = PassInfoManager.phoneAlarms + 1
             setChartData()
-            mqttSerModel.mqttHelper?.let {
-                it.uploadRecord(1, "IN")
-                // speak()
-            }
+            mqttSerModel.uploadRecord(1, "IN", mIDCardInfo, captureBitmap)
             speak()
         }
 
@@ -208,10 +220,8 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
             PassInfoManager.totalPass = PassInfoManager.totalPass + 1
             PassInfoManager.otherAlarms = PassInfoManager.otherAlarms + 1
             setChartData()
-            mqttSerModel.mqttHelper?.let {
-                it.uploadRecord(0, "OUT")
-            }
-            faceModel.executeIDCardVer()
+            mqttSerModel.uploadRecord(1, "OUT", mIDCardInfo, captureBitmap)
+            //faceModel.executeIDCardVer()
         }
     }
 
@@ -379,6 +389,11 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
                     if (faceModel.isInit) {
                         val result = IdCardVerifyManager.getInstance()
                             .onPreviewData(data, mWidth, mHeight, true)
+
+                        if (hasCapture) {
+                            captureBitmap = capture(data, camera)
+                            hasCapture = false
+                        }
                         if (result.errCode != IdCardVerifyError.OK) {
                             when (result.errCode) {
                                 65539 -> {
@@ -415,6 +430,28 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
             Logger.e("出错：${it.message}")
             camera = null
         }
+    }
+
+    private fun capture(data: ByteArray, camera: Camera): Bitmap? {
+        if (data == null || camera == null) {
+            return null
+        }
+        val size = camera.parameters.previewSize
+        try {
+            val image = YuvImage(data, ImageFormat.NV21, size.width, size.height, null)
+            if (image != null) {
+                val stream = ByteArrayOutputStream()
+                image.compressToJpeg(Rect(0, 0, size.width, size.height), 80, stream)
+                val bitmap = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size())
+                stream.close()
+                Logger.i("图片抓拍成功！")
+                return bitmap
+            }
+        } catch (e: java.lang.Exception) {
+            Logger.e("抓拍图片报错：${e.message}")
+        }
+        return null
+
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {

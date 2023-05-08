@@ -13,6 +13,8 @@ class IDCardInfo {
     var addr: String? = null
     var passNo: String? = null
     var cardPic: Bitmap? = null
+    var identifyStatus: String? = null
+    var identifyMsg: String? = null
 
     override fun toString(): String {
         return "姓名：$name \n" +
