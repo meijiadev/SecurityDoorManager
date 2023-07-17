@@ -36,20 +36,19 @@ import com.sjb.securitydoormanager.ui.model.HomeViewModel
 import com.sjb.securitydoormanager.ui.model.IDFaceViewModel
 import com.sjb.securitydoormanager.ui.model.MqttSerModel
 import com.sjb.securitydoormanager.veriface.DrawUtils
+import com.ys.rkapi.MyManager
 import java.io.ByteArrayOutputStream
 import java.util.*
 
 class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), SurfaceHolder.Callback {
 
     private var pieDataSet: PieDataSet? = null
-
     private var updateUIAction = UnPeekLiveData<Int>()
 
     /**
      *权限请求是否通过
      */
     private var isPermissionGranted = false
-
     private lateinit var faceModel: IDFaceViewModel
     private lateinit var mqttSerModel: MqttSerModel
 
@@ -68,17 +67,17 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
      */
     private var captureBitmap: Bitmap? = null
 
-
     override fun getViewBinding(): ActivityHomeBinding {
         return ActivityHomeBinding.inflate(layoutInflater)
     }
 
 
     override fun initParam() {
+        initYsAndroidApi()
         faceModel = getActivityViewModel(IDFaceViewModel::class.java)
         mqttSerModel = getActivityViewModel(MqttSerModel::class.java)
         faceModel.cardFaceCompareResult.observe(this) {
-            hasCapture = true
+            //hasCapture = true
             if (it == true) {
                 toast("人证验证成功！")
                 mIDCardInfo?.identifyStatus = "success"
@@ -96,11 +95,46 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
         viewModel.idCardLiveData.observe(this) {
             Logger.e("接收身份证信息")
             mIDCardInfo = it
+            hasCapture = true
             showCardDialog(it)
             it.cardPic?.let { bitmap ->
                 inputCardImage(bitmap)
             }
         }
+    }
+
+
+    /**
+     * 初始化安卓开发板的api
+     */
+    private fun initYsAndroidApi() {
+        val myManager = MyManager.getInstance(this)
+        myManager.bindAIDLService(this)
+        myManager.setConnectClickInterface {
+            Logger.e(
+                "当前sdk的版本号：${myManager.firmwareVersion} \n " +
+                        "当前设备的型号：${myManager.androidModle} \n" +
+                        "设备的系统版本：${myManager.androidVersion} \n " +
+                        "当前设备的内存容量：${myManager.runningMemory} \n" +
+                        "获取设备的sn码：${myManager.sn}"
+            )
+            if (myManager.firmwareVersion.toInt() < 4) {
+                Logger.e("当前SDK的版本号小于4.0")
+            }
+            // 开机自启动
+            myManager.selfStart("com.sjb.securitydoormanager")
+            // 打开网络adb连接
+            myManager.setNetworkAdb(true)
+            // 设置守护进程 0:30s  1：60s   2:180s
+            myManager.daemon("com.sjb.securitydoormanager", 0)
+        }
+    }
+
+    /**
+     * 开机自检
+     */
+    private fun powerOnSelfTest() {
+
     }
 
     override fun initView() {
@@ -216,6 +250,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
             speak()
         }
 
+
         binding.otherAlarmTv.setOnClickListener {
             PassInfoManager.totalPass = PassInfoManager.totalPass + 1
             PassInfoManager.otherAlarms = PassInfoManager.otherAlarms + 1
@@ -256,6 +291,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
     private fun speakIdCardSuccess() {
         MediaPlayerManager.setDataSource(this, R.raw.idcard_success)
         Logger.e("身份识别成功")
+        mqttSerModel.uploadRecord(0, "IN", mIDCardInfo, captureBitmap)
     }
 
     /**
@@ -264,6 +300,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
     private fun speakIdCardFailed() {
         MediaPlayerManager.setDataSource(this, R.raw.idcard_failed)
         Logger.e("身份识别失败")
+        mqttSerModel.uploadRecord(0, "IN", mIDCardInfo, captureBitmap)
     }
 
     /**
@@ -363,7 +400,6 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
         }
     }
 
-
     private var camereId = 0
     private var camera: Camera? = null
     private var displayOrientation = 0
@@ -432,6 +468,14 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
         }
     }
 
+
+    private fun isCamera(): Boolean {
+        return true
+    }
+
+    /**
+     * 抓拍
+     */
     private fun capture(data: ByteArray, camera: Camera): Bitmap? {
         if (data == null || camera == null) {
             return null

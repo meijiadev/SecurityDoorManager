@@ -100,7 +100,12 @@ class MqttSerModel : BaseViewModel() {
     /**
      * 上传安检记录+身份证信息
      */
-    fun uploadRecord(passStatus: Int, passMode: String, cardInfo: IDCardInfo?, capturePic: Bitmap?) {
+    fun uploadRecord(
+        passStatus: Int,
+        passMode: String,
+        cardInfo: IDCardInfo?,
+        capturePic: Bitmap?
+    ) {
         captureBitmap = capturePic
         val alarmInfoLs = mutableListOf<AlarmInfo>()
         alarmInfoLs.add(AlarmInfo("2", "1234", "手机"))
@@ -173,6 +178,10 @@ class MqttSerModel : BaseViewModel() {
      * 上传图片
      */
     private fun uploadImage(bitmap: Bitmap?, url: String, photoId: String, fileName: String?) {
+        if (bitmap == null) {
+            Logger.e("没有可上传的抓拍图片")
+            return
+        }
         viewModelScope.launch(Dispatchers.IO) {
             val file = FileUtil.bitmapToFile(bitmap, fileName)
             withContext(Dispatchers.Main) {
