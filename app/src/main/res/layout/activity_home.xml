@@ -60,7 +60,7 @@
 
     </RelativeLayout>
 
-
+     <!-- 将数据轮播增加到最有左边的数据统计模块-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/count_layout"
         android:layout_width="0dp"
@@ -183,6 +183,8 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+<!--    优化成立体的人体模型-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/other_layout"
         android:layout_width="0dp"
@@ -237,6 +239,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/shapeImageView" />
 
+
+        <!-- 去掉具体的手机图片-->
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -252,6 +256,7 @@
             app:layout_constraintTop_toBottomOf="@id/line1"
             app:layout_constraintWidth_percent="0.25" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <RelativeLayout
         android:id="@+id/video_layout"
@@ -287,6 +292,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
             <SurfaceView
                 android:id="@+id/surfaceView_rect"
                 android:layout_width="match_parent"

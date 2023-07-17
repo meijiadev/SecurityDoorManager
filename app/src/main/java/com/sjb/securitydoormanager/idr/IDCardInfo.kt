@@ -2,6 +2,9 @@ package com.sjb.securitydoormanager.idr
 
 import android.graphics.Bitmap
 
+/**
+ * 身份证信息
+ */
 class IDCardInfo {
     var name: String? = null
     var sex: String? = null
