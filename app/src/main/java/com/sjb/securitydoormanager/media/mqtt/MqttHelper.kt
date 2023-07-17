@@ -22,7 +22,7 @@ import java.util.UUID
  * date: 2023/1/30 15:33
  * desc: MqttHelper mqtt业务相关工具类
  */
-const val host = "tcp://192.168.2.131:1883"
+const val host = "tcp://192.168.2.31:1883"
 
 /**
  *用户发布主题  + 【设备SN码】

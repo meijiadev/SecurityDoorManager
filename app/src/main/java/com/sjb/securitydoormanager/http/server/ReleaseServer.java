@@ -12,9 +12,11 @@ import com.hjq.http.config.IRequestServer;
  */
 public class ReleaseServer implements IRequestServer {
 
+
     @NonNull
     @Override
     public String getHost() {
-        return "https://www.wanandroid.com/";
+        // 公司平台地址
+        return "https://www.hdvsiot.com/";
     }
 }
