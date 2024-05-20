@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/time_tv"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.4"
+        android:layout_marginStart="20dp"
+        android:text="时间"
+        android:textSize="30sp"
+        android:textColor="@color/text_c6cbff"
+        android:gravity="center_vertical"
+        />
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/mode_tv"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toEndOf="@id/time_tv"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.2"
+        android:layout_marginStart="@dimen/dp_10"
+        android:text="模式"
+        android:textSize="30sp"
+        android:textColor="@color/text_c6cbff"
+        android:gravity="center_vertical"
+        />
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/status_tv"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.2"
+        android:layout_marginEnd="@dimen/dp_40"
+        android:text="状态"
+        android:textSize="30dp"
+        android:textColor="@color/text_c6cbff"
+        android:gravity="center"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginStart="20dp"
+    android:layout_marginTop="10dp">
+    <TextView
+        android:id="@+id/text_tv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="50dp"
+        android:text="安检门检测统计"
+        android:textColor="@color/text_c6cbff"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pie_chart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_tv"
+        app:layout_constraintWidth_percent="0.85"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp" />
+
+    <com.hjq.shape.view.ShapeTextView
+        android:id="@+id/pass_total_tv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pie_chart"
+        app:layout_constraintWidth_percent="0.4"
+        app:shape_radius="10dp"
+        app:shape_strokeColor="@color/text_c6cbff"
+        app:shape_strokeWidth="1dp"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:paddingStart="25dp"
+
+
+        android:paddingEnd="10dp"
+        android:text="通过总数：100"
+        android:textColor="@color/text_c6cbff"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <com.hjq.shape.view.ShapeTextView
+        android:id="@+id/pass_tv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pie_chart"
+        app:layout_constraintWidth_percent="0.4"
+        app:shape_radius="10dp"
+        app:shape_strokeColor="@color/text_c6cbff"
+        app:shape_strokeWidth="1dp"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_toRightOf="@id/pass_total_tv"
+        android:gravity="center"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:text="净通过数：87"
+        android:textColor="@color/text_c6cbff"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <com.hjq.shape.view.ShapeTextView
+        android:id="@+id/phone_alarm_tv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pass_total_tv"
+        app:layout_constraintWidth_percent="0.4"
+        app:shape_radius="10dp"
+        app:shape_strokeColor="@color/text_c6cbff"
+        app:shape_strokeWidth="1dp"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:text="手机报警：100"
+        android:textColor="@color/text_c6cbff"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <com.hjq.shape.view.ShapeTextView
+        android:id="@+id/other_alarm_tv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pass_tv"
+        app:layout_constraintWidth_percent="0.4"
+        app:shape_radius="10dp"
+        app:shape_strokeColor="@color/text_c6cbff"
+        app:shape_strokeWidth="1dp"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="25dp"
+        android:layout_toRightOf="@id/pass_total_tv"
+        android:gravity="center"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:text="其他报警：87"
+        android:textColor="@color/text_c6cbff"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,6 +8,9 @@ import com.sjb.securitydoormanager.R
 import com.sjb.securitydoormanager.idr.IDCardInfo
 
 class IDCardDialog(context: Context) : CenterPopupView(context) {
+
+
+
     private val tvName: TextView by lazy { findViewById(R.id.tv_name) }
     private val tvCardPic: ImageView by lazy { findViewById(R.id.iv_card_picture) }
     private val tvSex: TextView by lazy { findViewById(R.id.tv_sex) }
@@ -16,6 +19,8 @@ class IDCardDialog(context: Context) : CenterPopupView(context) {
 
     // 身份证信息
     private var mIDCardInfo: IDCardInfo? = null
+
+
 
     override fun getImplLayoutId(): Int = R.layout.dialog_idcard_layout
 
