@@ -31,6 +31,7 @@ import com.sjb.securitydoormanager.databinding.ActivityHomeBinding
 import com.sjb.securitydoormanager.idr.IDCardInfo
 import com.sjb.securitydoormanager.media.MediaPlayerManager
 import com.sjb.securitydoormanager.serialport.DataMcuProcess
+import com.sjb.securitydoormanager.serialport.DataProtocol
 import com.sjb.securitydoormanager.serialport.SerialPortManager
 import com.sjb.securitydoormanager.ui.dialog.IDCardDialog
 import com.sjb.securitydoormanager.ui.fragment.RecordListFragment
@@ -228,6 +229,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
             serialManager.init()
             serialManager.setIData(mcuProcess)
             serialManager.startRead()
+            serialManager.sendMsg(DataProtocol.connectData)
             viewModel.startRead()
             mqttSerModel.initMqttSer()
         }, 1000)

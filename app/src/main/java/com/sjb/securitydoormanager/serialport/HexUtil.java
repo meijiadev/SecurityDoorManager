@@ -1,3 +1,5 @@
+package com.sjb.securitydoormanager.serialport;
+
 public class HexUtil {
 
     private static final char[] DIGITS_LOWER = {'0', '1', '2', '3', '4', '5',

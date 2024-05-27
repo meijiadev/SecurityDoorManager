@@ -3,6 +3,7 @@ package com.sjb.securitydoormanager.serialport
 import android.serialport.SerialPort
 import androidx.annotation.RequiresPermission.Read
 import com.orhanobut.logger.Logger
+import com.sjb.securitydoormanager.serialport.DataProtocol.HEAD_CMD_1
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -18,7 +19,7 @@ class SerialPortManager private constructor() {
     /**
      * 串口地址
      */
-    private var path: String? = "/dev/ttyS3"
+    private var path: String? = "/dev/ttyS0"
 
     /**
      * 波特率
@@ -42,35 +43,7 @@ class SerialPortManager private constructor() {
      */
     private var readThread: ReadThread? = null
 
-    private val testByteArray = byteArrayOf(
-        0x0D,
-        0x0A,
-        0x1A,
-        0x01,
-        0x01,
-        0x02,
-        0x69,
-        0x02,
-        0x17,
-        0x0F,
-        0xFE.toByte(),
-        0x0C,
-        0x6D,
-        0x09,
-        0x06,
-        0x06,
-        0x34,
-        0x04,
-        0xCA.toByte(),
-        0x03,
-        0x91.toByte(),
-        0x03,
-        0x04,
-        0x02,
-        0x1D,
-        0x02,
-        0x9C.toByte()
-    )
+
 
 
     companion object {
@@ -120,6 +93,7 @@ class SerialPortManager private constructor() {
         readThread?.start()
        // WriteThread().start()
     }
+
 
 
     /**
