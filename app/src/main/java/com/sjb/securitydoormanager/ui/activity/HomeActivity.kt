@@ -2,9 +2,12 @@ package com.sjb.securitydoormanager.ui.activity
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.res.Configuration
 import android.graphics.*
 import android.hardware.Camera
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
 import android.os.Build
 import android.os.Handler
 import android.util.DisplayMetrics
@@ -173,7 +176,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
         binding.scanView.setStartFromBottom(false)
         binding.scanView.setAnimDuration(2000)
 
-        binding.surfaceView.holder.addCallback(this)
+        binding.surfaceViewRect.holder.addCallback(this)
         binding.surfaceViewRect.setZOrderMediaOverlay(true)
         binding.surfaceViewRect.holder.setFormat(PixelFormat.TRANSLUCENT)
         switchFragment(totalDataFragment)
@@ -215,9 +218,6 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
     }
 
 
-
-
-
     override fun initData() {
         updateTime()
         TimeThread().start()
@@ -229,7 +229,10 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
             serialManager.init()
             serialManager.setIData(mcuProcess)
             serialManager.startRead()
+            // 协议建立链接
             serialManager.sendMsg(DataProtocol.connectData)
+            // 只要有人过就上传数据
+            serialManager.sendMsg(DataProtocol.data_0x04)
             viewModel.startRead()
             mqttSerModel.initMqttSer()
         }, 1000)
@@ -363,12 +366,17 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
                 }
             } else {
                 isPermissionGranted = true
-                faceModel.initIdCardVerify()
+                //  faceModel.initIdCardVerify()
+                val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                val devices = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
+                for (dev in devices) {
+                    Logger.i("设备源：${dev.type}")
+                }
 
             }
         } else {
             isPermissionGranted = true
-            faceModel.initIdCardVerify()
+            //     faceModel.initIdCardVerify()
         }
     }
 
