@@ -77,6 +77,7 @@ class DataMcuProcess : DataProcBase() {
      * 解析手机门的上传数据
      */
     private fun phoneDoorParse(data: ByteArray) {
+        var zoneNumber = 6           // 默认6区
         locationEvent.postValue("")
         // 从前往后的数量
         val passForward =
@@ -102,7 +103,17 @@ class DataMcuProcess : DataProcBase() {
         Logger.i("从前往后走的报警数：$forwardWaring,从后往前走的报警数：$backwardWaring")
         alarmNumberEvent.postValue(forwardWaring + backwardWaring)
         val zoneType = data[15].and(ff).toInt()     // 判断多少区的安检门
-        val zoneNumber = 6           // 默认6区
+        if (zoneType == 0 || zoneType == 13 || zoneType == 17 || zoneType == 22 || zoneType == 25) {
+            zoneNumber = 6
+        }
+        if (zoneType == 1 || zoneType == 14 || zoneType == 26) {
+            zoneNumber = 12
+        }
+
+        if (zoneType == 2 || zoneType == 15 || zoneType == 19 || zoneType == 27) {
+            zoneNumber = 18
+        }
+
         // 门分区 0:6区   1:12区   2:18区   3:36区   4:33区   5:无极分区
         //7: 8区  8:16区  9:24区  10:48区  11:45区  12:无极分区（8线圈）
         //13:6区   14:12区   15:18区 （门柱灯不一样，不能大于18区）
