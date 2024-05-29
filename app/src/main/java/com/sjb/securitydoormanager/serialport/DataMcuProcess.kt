@@ -1,5 +1,6 @@
 package com.sjb.securitydoormanager.serialport
 
+import com.kunminx.architecture.ui.callback.UnPeekLiveData
 import com.orhanobut.logger.Logger
 import java.util.ArrayDeque
 import kotlin.experimental.and
@@ -10,7 +11,10 @@ import kotlin.experimental.and
  * desc: DataMcuProcess 数据最终解析处理的类
  */
 class DataMcuProcess : DataProcBase() {
-
+    var alarmGoodsEvent = UnPeekLiveData<String>()      // 报警物品
+    var passNumberEvent = UnPeekLiveData<Int>()         // 通过的人数
+    var alarmNumberEvent = UnPeekLiveData<Int>()        // 通过的报警次数
+    var locationEvent = UnPeekLiveData<String>()        // 报警的位置
     override fun findCmdProc(queueByte: ArrayDeque<Byte>): Boolean {
         val buf = queueByte.toByteArray()
         if (buf == null) {
@@ -37,11 +41,15 @@ class DataMcuProcess : DataProcBase() {
                     pollQueue(i)
                     // 取出一条完整的命令
                     val oneCmd = Utils.getBytes(buf, i, cmdLen)
+                    //取出完整命令后，将队列中的数据清楚
+                    pollQueue(cmdLen)
                     DataProtocol.funcCode = oneCmd[2].toInt()
+                    val msg = HexUtil.formatHexString(oneCmd, true)
                     // 安检门上传的数据
                     if (DataProtocol.funcCode == 0x01) {
                         // 手机门上传的数据
                         if (cmdLen == 62) {
+                            Logger.i("serialPort Receive：$msg")
                             phoneDoorParse(oneCmd)
                         }
                         // 普通门上传的数据
@@ -50,12 +58,14 @@ class DataMcuProcess : DataProcBase() {
                         }
                     }
 
-                    val msg = HexUtil.formatHexString(oneCmd, true)
-                    Logger.i("serialPort Receive：$msg")
+                    if (DataProtocol.funcCode == 0x00) {
+                        Logger.i("同步成功！serialPort Receive：$msg")
+                    }
 
+                    if (DataProtocol.funcCode == 0x04) {
+                        Logger.i("已设置有人通过自动上传数据：$msg")
+                    }
                 }
-
-
             }
         }
         return true
@@ -67,6 +77,7 @@ class DataMcuProcess : DataProcBase() {
      * 解析手机门的上传数据
      */
     private fun phoneDoorParse(data: ByteArray) {
+        locationEvent.postValue("")
         // 从前往后的数量
         val passForward =
             data[3].and(ff).toInt().shl(14) +
@@ -77,6 +88,8 @@ class DataMcuProcess : DataProcBase() {
             data[6].and(ff).toInt().shl(14) +
                     data[7].and(ff).toInt().shl(7) +
                     data[8].and(ff).toInt()
+        Logger.i("从前往后走的数量：$passForward,从后往前走的数量：$passBackward")
+        passNumberEvent.postValue(passForward + passBackward)
         // 从前往后的报警数量
         val forwardWaring =
             data[9].and(ff).toInt().shl(14) +
@@ -86,6 +99,8 @@ class DataMcuProcess : DataProcBase() {
             data[12].and(ff).toInt().shl(14) +
                     data[13].and(ff).toInt().shl(7) +
                     data[14].and(ff).toInt()
+        Logger.i("从前往后走的报警数：$forwardWaring,从后往前走的报警数：$backwardWaring")
+        alarmNumberEvent.postValue(forwardWaring + backwardWaring)
         val zoneType = data[15].and(ff).toInt()     // 判断多少区的安检门
         val zoneNumber = 6           // 默认6区
         // 门分区 0:6区   1:12区   2:18区   3:36区   4:33区   5:无极分区
@@ -111,12 +126,30 @@ class DataMcuProcess : DataProcBase() {
         }
         // 总共报警的区位列表
         val alarmZoneList = mutableListOf<Int>()
+        var alarmZoneStr: String = ""
         for (i in 0..5) {
-            if (alarm6Zone[i] && alarm6Zone[i + 1]) {
+            if (alarm6Zone[i * 2] && alarm6Zone[i * 2 + 1]) {
                 alarmZoneList.add(i + 1)
                 Logger.i("报警的区位是：${i + 1}")
+                val location = when (i) {
+                    0 -> "小腿"
+                    1 -> "大腿"
+                    2 -> "腰部"
+                    3 -> "胸部"
+                    4 -> "颈部"
+                    5 -> "头部"
+                    else -> ""
+                }
+                Logger.i("报警的位置是：$location")
+                locationEvent.postValue(location)
             }
+            alarmZoneStr += if (alarm6Zone[i * 2]) "1" else "0"
+            alarmZoneStr += if (alarm6Zone[i * 2 + 1]) "1" else "0"
+
         }
+        Logger.i("报警区位分布：$alarmZoneStr")
+        //80 3e 01 00 00 7a 00 00 7b 00 00 67 00 00 68 0d 0a 03 14 00 24 0b 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 40 01 00 00 00 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 00 7f
+        //80 3e 01 00 00 7a 00 00 7b 00 00 67 00 00 68 0d 0a 03 14 00 24 0b 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 40 01 00 00 00 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 00 7f
         // 0：没有金属          1：工具刀枪          2：保温杯
         //3：违禁品            4：铜块铝块          5：易拉罐
         //6：电子产品          7：日常金属          8：雨伞
@@ -126,22 +159,41 @@ class DataMcuProcess : DataProcBase() {
         for (i in 45..56) {
             val type = data[i].and(ff).toInt()
             metalTypes.add(type)
-            Logger.i("报警的东西是：$type")
+            if (type != 0) {
+                Logger.i("${i - 45 + 1}区报警，东西是：$type")
+                if (type == 6 || type == 11) {
+                    alarmGoodsEvent.postValue("电子产品")
+                    return
+                } else {
+                    alarmGoodsEvent.postValue("其他物品")
+                }
+            }
         }
-
-
     }
 
 
     private fun hexToBinaryArray(hexByte: Byte): BooleanArray {
         val binaryArray = BooleanArray(7)
         var n = hexByte.toInt() and 0xFF // 确保为正数
-        for (j in 0..6) {
-            binaryArray[j] = n and 0x80 != 0
-            n = n shl 1 // 左移一位
+        Logger.i("hexByte：$n")
+        for (j in 0..7) {
+            if (j != 0) {
+                binaryArray[j - 1] =
+                    n and 0x80 != 0                                   //  0000 0001       0100 0000              80= 1000 0000
+            }
+            n = n shl 1
         }
-        binaryArray.reversedArray()
+        binaryArray.reverse()
+//        var msg=""
+//        for (i in 0..6){
+//            msg+=if (binaryArray[i]) "1" else "0"
+//        }
+//        Logger.i("msg:$msg")
         return binaryArray
     }
 }
 
+
+// 1000 0000
+// 0000 0110
+// 0 00 00 00

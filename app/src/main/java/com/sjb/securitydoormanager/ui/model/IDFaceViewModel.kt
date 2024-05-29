@@ -39,10 +39,14 @@ class IDFaceViewModel : BaseViewModel() {
      * 获取人证识别的激活结果，是否激活
      */
     fun initIdCardVerify() {
-        val initResult =
-            IdCardVerifyManager.getInstance().init(SJBApp.context, idCardVerifyListener)
-        isInit = initResult == IdCardVerifyError.OK
-        Logger.e("init Result:$initResult")
+        runCatching {
+            val initResult =
+                IdCardVerifyManager.getInstance().init(SJBApp.context, idCardVerifyListener)
+            isInit = initResult == IdCardVerifyError.OK
+            Logger.e("init Result:$initResult")
+        }.onFailure {
+            Logger.e("error:${it.message}")
+        }
     }
 
     /**

@@ -61,6 +61,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
     private var isPermissionGranted = false
     private lateinit var faceModel: IDFaceViewModel
     private lateinit var mqttSerModel: MqttSerModel
+    private val mcuProcess = DataMcuProcess()
 
     /**
      * 身份证相关信息
@@ -175,11 +176,11 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
         binding.scanView.setVertical(true)
         binding.scanView.setStartFromBottom(false)
         binding.scanView.setAnimDuration(2000)
-
         binding.surfaceViewRect.holder.addCallback(this)
         binding.surfaceViewRect.setZOrderMediaOverlay(true)
         binding.surfaceViewRect.holder.setFormat(PixelFormat.TRANSLUCENT)
         switchFragment(totalDataFragment)
+        totalDataFragment.setMcu(mcuProcess)
     }
 
     /**
@@ -225,7 +226,6 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
         Handler().postDelayed({
             initPermission()
             val serialManager = SerialPortManager.instance
-            val mcuProcess = DataMcuProcess()
             serialManager.init()
             serialManager.setIData(mcuProcess)
             serialManager.startRead()
@@ -235,6 +235,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
             serialManager.sendMsg(DataProtocol.data_0x04)
             viewModel.startRead()
             mqttSerModel.initMqttSer()
+            binding.scanView.startScanAnim()
         }, 1000)
 
     }
@@ -255,37 +256,33 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
 
 
     override fun initListener() {
-//        binding.passTv.setOnClickListener {
-//            PassInfoManager.totalPass = PassInfoManager.totalPass + 1
-//            PassInfoManager.hasPass = PassInfoManager.hasPass + 1
-//            setChartData()
-//            binding.scanView.startScanAnim()
-//            mqttSerModel.uploadRecord(0, "IN", mIDCardInfo, captureBitmap)
-//
-//        }
-//
-//        binding.phoneAlarmTv.setOnClickListener {
-//            PassInfoManager.totalPass = PassInfoManager.totalPass + 1
-//            PassInfoManager.phoneAlarms = PassInfoManager.phoneAlarms + 1
-//            setChartData()
-//            mqttSerModel.uploadRecord(1, "IN", mIDCardInfo, captureBitmap)
-//            speak()
-//        }
-//
-//
-//        binding.otherAlarmTv.setOnClickListener {
-//            PassInfoManager.totalPass = PassInfoManager.totalPass + 1
-//            PassInfoManager.otherAlarms = PassInfoManager.otherAlarms + 1
-//            setChartData()
-//            mqttSerModel.uploadRecord(1, "OUT", mIDCardInfo, captureBitmap)
-//            //faceModel.executeIDCardVer()
-//        }
+
+        mcuProcess.alarmGoodsEvent.observe(this){
+            if (!binding.tvType.text.toString().contains(it)){
+                binding.tvType.text = it
+            }
+
+        }
+        mcuProcess.locationEvent.observe(this){
+            if (it.isNullOrEmpty()){
+                binding.tvLocation.text=""
+            }else{
+                if (!binding.tvLocation.text.toString().contains(it)){
+                    binding.tvLocation.append(it)
+                }
+            }
+        }
     }
 
     override fun initViewObservable() {
         updateUIAction.observe(this) {
             it?.let {
                 updateTime()
+            }
+        }
+        mcuProcess.alarmGoodsEvent.observe(this){
+            if (it=="电子产品"){
+                speak()
             }
         }
     }
@@ -357,7 +354,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
                     if (allGranted) {
                         isPermissionGranted = true
                         Logger.i("所有申请都已通过")
-                        faceModel.initIdCardVerify()
+                        //faceModel.initIdCardVerify()
 
                     } else {
                         isPermissionGranted = false
@@ -376,7 +373,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
             }
         } else {
             isPermissionGranted = true
-            //     faceModel.initIdCardVerify()
+              //   faceModel.initIdCardVerify()
         }
     }
 

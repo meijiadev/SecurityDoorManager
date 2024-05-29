@@ -1,5 +1,6 @@
 package com.sjb.securitydoormanager.ui.fragment
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import com.github.mikephil.charting.components.Description
@@ -12,7 +13,13 @@ import com.sjb.base.base.BaseMvFragment
 import com.sjb.base.base.BaseViewModel
 import com.sjb.securitydoormanager.R
 import com.sjb.securitydoormanager.constant.PassInfoManager
+import com.sjb.securitydoormanager.constant.PassInfoManager.hasPass
+import com.sjb.securitydoormanager.constant.PassInfoManager.otherAlarms
+import com.sjb.securitydoormanager.constant.PassInfoManager.phoneAlarms
+import com.sjb.securitydoormanager.constant.PassInfoManager.totalAlarms
+import com.sjb.securitydoormanager.constant.PassInfoManager.totalPass
 import com.sjb.securitydoormanager.databinding.FragmentTotalDataBinding
+import com.sjb.securitydoormanager.serialport.DataMcuProcess
 
 /**
  * desc:数据统计总览
@@ -27,6 +34,13 @@ class TotalDataFragment : BaseMvFragment<FragmentTotalDataBinding, BaseViewModel
             fragment.arguments = args
             return fragment
         }
+    }
+
+    private lateinit var mcuProcess: DataMcuProcess
+
+
+    fun setMcu(mcu: DataMcuProcess) {
+        this.mcuProcess = mcu
     }
 
 
@@ -77,8 +91,8 @@ class TotalDataFragment : BaseMvFragment<FragmentTotalDataBinding, BaseViewModel
 
     override fun initListener() {
         binding.passTv.setOnClickListener {
-            PassInfoManager.totalPass = PassInfoManager.totalPass + 1
-            PassInfoManager.hasPass = PassInfoManager.hasPass + 1
+            PassInfoManager.totalPass += 1
+            PassInfoManager.hasPass += 1
             setChartData()
 //            binding.scanView.startScanAnim()
 //            mqttSerModel.uploadRecord(0, "IN", mIDCardInfo, captureBitmap)
@@ -86,8 +100,8 @@ class TotalDataFragment : BaseMvFragment<FragmentTotalDataBinding, BaseViewModel
         }
 
         binding.phoneAlarmTv.setOnClickListener {
-            PassInfoManager.totalPass = PassInfoManager.totalPass + 1
-            PassInfoManager.phoneAlarms = PassInfoManager.phoneAlarms + 1
+            totalPass += 1
+            phoneAlarms += 1
             setChartData()
 //            mqttSerModel.uploadRecord(1, "IN", mIDCardInfo, captureBitmap)
 //            speak()
@@ -97,22 +111,45 @@ class TotalDataFragment : BaseMvFragment<FragmentTotalDataBinding, BaseViewModel
 
 
         binding.otherAlarmTv.setOnClickListener {
-            PassInfoManager.totalPass = PassInfoManager.totalPass + 1
-            PassInfoManager.otherAlarms = PassInfoManager.otherAlarms + 1
+            totalPass += 1
+            otherAlarms += 1
             setChartData()
 //            mqttSerModel.uploadRecord(1, "OUT", mIDCardInfo, captureBitmap)
             //faceModel.executeIDCardVer()
+        }
+
+
+        mcuProcess.passNumberEvent.observe(this) {
+            it?.toFloat()?.let {
+                totalPass = it
+                setChartData()
+            }
+        }
+        mcuProcess.alarmNumberEvent.observe(this) {
+            it?.toFloat()?.let {
+                totalAlarms = it
+                hasPass = totalPass - totalAlarms
+                setChartData()
+            }
+        }
+        mcuProcess.alarmGoodsEvent.observe(this) {
+            if (it == "电子产品") {
+                phoneAlarms += 1
+                otherAlarms = totalAlarms - phoneAlarms
+                setChartData()
+            }
         }
     }
 
     /**
      * 设置扇形图的数据
      */
+    @SuppressLint("SetTextI18n")
     private fun setChartData() {
         val entries = mutableListOf<PieEntry>()
         entries.add(PieEntry(PassInfoManager.hasPass, "净通过"))
-        entries.add(PieEntry(PassInfoManager.phoneAlarms, "手机报警"))
-        entries.add(PieEntry(PassInfoManager.otherAlarms, "其他报警"))
+        entries.add(PieEntry(phoneAlarms, "电子产品报警"))
+        entries.add(PieEntry(otherAlarms, "其他报警"))
         pieDataSet = PieDataSet(entries, "")
         pieDataSet?.valueTextSize = 0f
         pieDataSet?.valueTextColor = Color.WHITE
@@ -126,9 +163,9 @@ class TotalDataFragment : BaseMvFragment<FragmentTotalDataBinding, BaseViewModel
         binding.run {
             pieChart.data = pieData
             pieChart.invalidate()
-            passTotalTv.text = "通过总数：" + PassInfoManager.totalPass.toInt()
+            passTotalTv.text = "通过总数：" + totalPass.toInt()
             passTv.text = "净通过数：" + PassInfoManager.hasPass.toInt()
-            phoneAlarmTv.text = "手机报警：" + PassInfoManager.phoneAlarms.toInt()
+            phoneAlarmTv.text = "电子产品报警：" + PassInfoManager.phoneAlarms.toInt()
             otherAlarmTv.text = "其他报警：" + PassInfoManager.otherAlarms.toInt()
         }
     }
