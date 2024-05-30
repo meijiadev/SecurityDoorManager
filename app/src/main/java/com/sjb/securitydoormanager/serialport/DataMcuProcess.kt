@@ -15,6 +15,9 @@ class DataMcuProcess : DataProcBase() {
     var passNumberEvent = UnPeekLiveData<Int>()         // 通过的人数
     var alarmNumberEvent = UnPeekLiveData<Int>()        // 通过的报警次数
     var locationEvent = UnPeekLiveData<String>()        // 报警的位置
+
+    var enterType = 0                  // 进入的方向 0： 从前往后进   1：从后往前
+
     override fun findCmdProc(queueByte: ArrayDeque<Byte>): Boolean {
         val buf = queueByte.toByteArray()
         if (buf == null) {
@@ -64,6 +67,22 @@ class DataMcuProcess : DataProcBase() {
 
                     if (DataProtocol.funcCode == 0x04) {
                         Logger.i("已设置有人通过自动上传数据：$msg")
+                    }
+
+                    if (DataProtocol.funcCode == 0x66) {      // code=102
+                        // 红外开关状态变化时上传一次
+                        //1: 从前往后，挡住前面红外       2: 从前往后，离开前面红外
+                        //3: 从前往后，挡住后面红外       4: 从前往后，离开后面红外
+                        //11: 从后往前，挡住后面红外      12: 从后往前，离开后面红外
+                        //13: 从后往前，挡住前面红外      14: 从后往前，离开前面红外
+                        val irState = oneCmd[3].toInt()
+                        enterType =
+                            if (irState == 1 || irState == 2 || irState == 3 || irState == 4) {
+                                0
+                            } else {
+                                1
+                            }
+                        Logger.i("红外发生变化：$irState")
                     }
                 }
             }
@@ -137,27 +156,32 @@ class DataMcuProcess : DataProcBase() {
         }
         // 总共报警的区位列表
         val alarmZoneList = mutableListOf<Int>()
-        var alarmZoneStr: String = ""
+        var alarmZoneStr = ""
+        var alarmLocation = ""
         for (i in 0..5) {
-            if (alarm6Zone[i * 2] && alarm6Zone[i * 2 + 1]) {
-                alarmZoneList.add(i + 1)
-                Logger.i("报警的区位是：${i + 1}")
-                val location = when (i) {
-                    0 -> "小腿"
-                    1 -> "大腿"
-                    2 -> "腰部"
-                    3 -> "胸部"
-                    4 -> "颈部"
-                    5 -> "头部"
-                    else -> ""
+            if (zoneNumber == 6) {
+                if (alarm6Zone[i * 2] && alarm6Zone[i * 2 + 1]) {
+                    alarmZoneList.add(i + 1)
+                    Logger.i("报警的区位是：${i + 1}")
+                    val location = resolutionZone(i)
+                    Logger.i("报警的位置是：$location")
+                    alarmLocation += location
                 }
-                Logger.i("报警的位置是：$location")
-                locationEvent.postValue(location)
+            }
+            if (zoneNumber == 12 || zoneNumber == 18) {
+                if (alarm6Zone[i * 2] || alarm6Zone[i * 2 + 1]) {
+                    alarmZoneList.add(i + 1)
+                    Logger.i("报警的区位是：${i + 1}")
+                    val location = resolutionZone(i)
+                    Logger.i("报警的位置是：$location")
+                    alarmLocation += location
+                }
             }
             alarmZoneStr += if (alarm6Zone[i * 2]) "1" else "0"
             alarmZoneStr += if (alarm6Zone[i * 2 + 1]) "1" else "0"
 
         }
+        locationEvent.postValue(alarmLocation)
         Logger.i("报警区位分布：$alarmZoneStr")
         //80 3e 01 00 00 7a 00 00 7b 00 00 67 00 00 68 0d 0a 03 14 00 24 0b 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 40 01 00 00 00 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 00 7f
         //80 3e 01 00 00 7a 00 00 7b 00 00 67 00 00 68 0d 0a 03 14 00 24 0b 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 40 01 00 00 00 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 00 7f
@@ -167,11 +191,11 @@ class DataMcuProcess : DataProcBase() {
         //9：混合金属          10：铁罐铁盒         11：耳机等电子产品
         // data[45]-data[60] 总共 16个区
         val metalTypes = mutableListOf<Int>()
-        for (i in 45..56) {
-            val type = data[i].and(ff).toInt()
+        for (i in 0..5) {
+            val type = data[45 + i * 2 + 1].and(ff).toInt()
             metalTypes.add(type)
             if (type != 0) {
-                Logger.i("${i - 45 + 1}区报警，东西是：$type")
+                Logger.i("${(i + 1) * 2 - 1}区报警，东西是：$type")
                 if (type == 6 || type == 11) {
                     alarmGoodsEvent.postValue("电子产品")
                     return
@@ -182,6 +206,21 @@ class DataMcuProcess : DataProcBase() {
         }
     }
 
+    /**
+     * 分析区位对应身体的哪个位置
+     */
+    private fun resolutionZone(zone: Int): String {
+        val location = when (zone) {
+            0 -> "小腿"
+            1 -> "大腿"
+            2 -> "腰部"
+            3 -> "胸部"
+            4 -> "颈部"
+            5 -> "头部"
+            else -> ""
+        }
+        return location
+    }
 
     private fun hexToBinaryArray(hexByte: Byte): BooleanArray {
         val binaryArray = BooleanArray(7)

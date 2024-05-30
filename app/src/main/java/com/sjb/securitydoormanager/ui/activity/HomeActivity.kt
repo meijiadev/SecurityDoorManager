@@ -264,13 +264,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
 
         }
         mcuProcess.locationEvent.observe(this){
-            if (it.isNullOrEmpty()){
-                binding.tvLocation.text=""
-            }else{
-                if (!binding.tvLocation.text.toString().contains(it)){
-                    binding.tvLocation.append(it)
-                }
-            }
+            binding.tvLocation.text=it
         }
     }
 
