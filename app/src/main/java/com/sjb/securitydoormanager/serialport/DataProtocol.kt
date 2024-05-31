@@ -32,8 +32,8 @@ object DataProtocol {
     )
 
     val CODE_102 = 102              // 红外开关状态有变化时上传一次状态信息 安检门 TO 上位机
-    val CODE_6 = 0X06              // 安检门开关机
-    val CODE_1 = 0X01             // 安检门上传数据  普通门-数据长度42，总长度为46   手机门-数据长度58，总长度为62
+    val CODE_6 = 0x06              // 安检门开关机
+    val CODE_1 = 0x01             // 安检门上传数据  普通门-数据长度42，总长度为46   手机门-数据长度58，总长度为62
 
 
 
@@ -54,9 +54,9 @@ object DataProtocol {
      */
     val data_0x04 = byteArrayOf(
         HEAD_CMD_1,
-        0X04,
-        0X04,
-        0X7F
+        0x04,
+        0x04,
+        0x7F
     )
 
     /**
@@ -64,9 +64,17 @@ object DataProtocol {
      */
     val data_0x05 = byteArrayOf(
         HEAD_CMD_1,
-        0X04,
-        0X05,
-        0X7F
+        0x04,
+        0x05,
+        0x7F
+    )
+
+    // 要求安检门上传配置参数
+    val data_0x02 = byteArrayOf(
+        HEAD_CMD_1,
+        0x04,
+        0x02,
+        0x7F
     )
 
 

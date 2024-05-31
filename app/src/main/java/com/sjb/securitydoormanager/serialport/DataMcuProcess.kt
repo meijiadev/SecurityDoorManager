@@ -48,6 +48,10 @@ class DataMcuProcess : DataProcBase() {
                     pollQueue(cmdLen)
                     DataProtocol.funcCode = oneCmd[2].toInt()
                     val msg = HexUtil.formatHexString(oneCmd, true)
+                    // 上位机和安检门同步成功
+                    if (DataProtocol.funcCode == 0x00) {
+                        Logger.i("同步成功！serialPort Receive：$msg")
+                    }
                     // 安检门上传的数据
                     if (DataProtocol.funcCode == 0x01) {
                         // 手机门上传的数据
@@ -60,9 +64,18 @@ class DataMcuProcess : DataProcBase() {
 
                         }
                     }
+                    // 安检门返回参数指令
+                    if (DataProtocol.funcCode == 0x02) {
+                        // 普通门
+                        if (cmdLen == 35) {
 
-                    if (DataProtocol.funcCode == 0x00) {
-                        Logger.i("同步成功！serialPort Receive：$msg")
+                        }
+                        // 手机安检门
+                        if (cmdLen == 97) {
+                            Logger.i("serialPort Receive：$msg")
+
+                        }
+
                     }
 
                     if (DataProtocol.funcCode == 0x04) {
@@ -179,7 +192,6 @@ class DataMcuProcess : DataProcBase() {
             }
             alarmZoneStr += if (alarm6Zone[i * 2]) "1" else "0"
             alarmZoneStr += if (alarm6Zone[i * 2 + 1]) "1" else "0"
-
         }
         locationEvent.postValue(alarmLocation)
         Logger.i("报警区位分布：$alarmZoneStr")
@@ -203,6 +215,26 @@ class DataMcuProcess : DataProcBase() {
                     alarmGoodsEvent.postValue("其他物品")
                 }
             }
+        }
+    }
+
+    /**
+     * 手机安检门参数解析
+     */
+    private fun phoneDoorArgParse(data: ByteArray) {
+        // 1区的灵敏度  0-999
+        val zone1Spl = data[3].toInt() * 128 + data[4].toInt()
+        val zone2Spl=data[5].toInt()*128 +data[6].toInt()
+        val zone3Spl=data[7].toInt()*128 +data[8].toInt()
+        val zone4Spl=data[9].toInt()*128 +data[10].toInt()
+        val zone5Spl=data[11].toInt()*128 +data[12].toInt()
+        val zone6Spl=data[13].toInt()*128 +data[14].toInt()
+
+        val overallSpl=data[19].toInt()*128 +data[20].toInt()
+
+        val zones=data[21].toInt()
+        if (zones==0){
+
         }
     }
 
