@@ -11,15 +11,14 @@
         android:id="@+id/title_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="30dp"
-        android:text="检测记录"
+        android:layout_marginTop="28dp"
+        android:text="实时检测记录"
         android:textColor="@color/text_c6cbff"
         android:textSize="33sp"
         android:textStyle="bold"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/time_tv"
@@ -34,19 +33,20 @@
         android:textColor="@color/text_c6cbff"
         android:gravity="center_vertical"
         />
+
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/mode_tv"
+        android:id="@+id/zone_tv"
         android:layout_width="0dp"
         android:layout_height="60dp"
+        android:layout_marginStart="8dp"
+        android:gravity="center_vertical"
+        android:text="报警区位"
+        android:textColor="@color/text_c6cbff"
+        android:textSize="25sp"
         app:layout_constraintStart_toEndOf="@id/time_tv"
         app:layout_constraintTop_toBottomOf="@id/title_tv"
-        app:layout_constraintWidth_percent="0.2"
-        android:layout_marginStart="@dimen/dp_10"
-        android:text="探测模式"
-        android:textSize="25sp"
-        android:textColor="@color/text_c6cbff"
-        android:gravity="center_vertical"
-        />
+        app:layout_constraintWidth_percent="0.2" />
+
     <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="0dp"
         android:layout_height="60dp"
@@ -54,7 +54,7 @@
         app:layout_constraintTop_toBottomOf="@id/title_tv"
         app:layout_constraintWidth_percent="0.2"
         android:layout_marginEnd="20dp"
-        android:text="通过状态"
+        android:text="结果"
         android:textSize="25sp"
         android:textColor="@color/text_c6cbff"
         android:gravity="center"

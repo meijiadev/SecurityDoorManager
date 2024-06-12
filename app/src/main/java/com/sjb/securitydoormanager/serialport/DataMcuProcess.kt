@@ -73,7 +73,7 @@ class DataMcuProcess : DataProcBase() {
                         // 手机安检门
                         if (cmdLen == 97) {
                             Logger.i("serialPort Receive：$msg")
-
+                            phoneDoorArgParse(oneCmd)
                         }
 
                     }
@@ -224,17 +224,28 @@ class DataMcuProcess : DataProcBase() {
     private fun phoneDoorArgParse(data: ByteArray) {
         // 1区的灵敏度  0-999
         val zone1Spl = data[3].toInt() * 128 + data[4].toInt()
-        val zone2Spl=data[5].toInt()*128 +data[6].toInt()
-        val zone3Spl=data[7].toInt()*128 +data[8].toInt()
-        val zone4Spl=data[9].toInt()*128 +data[10].toInt()
-        val zone5Spl=data[11].toInt()*128 +data[12].toInt()
-        val zone6Spl=data[13].toInt()*128 +data[14].toInt()
+        val zone2Spl = data[5].toInt() * 128 + data[6].toInt()
+        val zone3Spl = data[7].toInt() * 128 + data[8].toInt()
+        val zone4Spl = data[9].toInt() * 128 + data[10].toInt()
+        val zone5Spl = data[11].toInt() * 128 + data[12].toInt()
+        val zone6Spl = data[13].toInt() * 128 + data[14].toInt()
 
-        val overallSpl=data[19].toInt()*128 +data[20].toInt()
+        val overallSpl = data[19].toInt() * 128 + data[20].toInt()
 
-        val zones=data[21].toInt()
-        if (zones==0){
+        val zones = data[21].toInt() and 0x1f
+        when (zones) {
+            // 6区
+            0b00000 -> {
 
+            }
+            // 12 区
+            0b00001 -> {
+
+            }
+            // 18 区
+            0b00010 -> {
+
+            }
         }
     }
 

@@ -192,7 +192,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
      * 切换fragment视图
      */
     private fun switchFragment(target: Fragment) {
-        if (target != null && target != mFragment) {
+        if (target != mFragment) {
             val transaction = supportFragmentManager.beginTransaction()
             if (target is TotalDataFragment) {
                 transaction.setCustomAnimations(
@@ -233,6 +233,8 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
             serialManager.sendMsg(DataProtocol.connectData)
             // 只要有人过就上传数据
             serialManager.sendMsg(DataProtocol.data_0x04)
+            //要求安检门上传参数
+            serialManager.sendMsg(DataProtocol.data_0x02)
             viewModel.startRead()
             mqttSerModel.initMqttSer()
             binding.scanView.startScanAnim()
@@ -257,14 +259,14 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
 
     override fun initListener() {
 
-        mcuProcess.alarmGoodsEvent.observe(this){
-            if (!binding.tvType.text.toString().contains(it)){
+        mcuProcess.alarmGoodsEvent.observe(this) {
+            if (!binding.tvType.text.toString().contains(it)) {
                 binding.tvType.text = it
             }
 
         }
-        mcuProcess.locationEvent.observe(this){
-            binding.tvLocation.text=it
+        mcuProcess.locationEvent.observe(this) {
+            binding.tvLocation.text = it
         }
     }
 
@@ -274,8 +276,8 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
                 updateTime()
             }
         }
-        mcuProcess.alarmGoodsEvent.observe(this){
-            if (it=="电子产品"){
+        mcuProcess.alarmGoodsEvent.observe(this) {
+            if (it == "电子产品") {
                 speak()
             }
         }
@@ -367,7 +369,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
             }
         } else {
             isPermissionGranted = true
-              //   faceModel.initIdCardVerify()
+            //   faceModel.initIdCardVerify()
         }
     }
 

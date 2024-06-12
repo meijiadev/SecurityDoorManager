@@ -55,12 +55,13 @@
     </RelativeLayout>
     <!-- 将数据轮播增加到最有左边的数据统计模块-->
 
+    <!--    优化成立体的人体模型-->
     <FrameLayout
         android:id="@+id/layout_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:background="@mipmap/shape_bg"
         android:visibility="visible"
         app:layout_constraintHeight_percent="0.8"
@@ -68,7 +69,6 @@
         app:layout_constraintTop_toBottomOf="@id/title_layout"
         app:layout_constraintWidth_percent="0.25"></FrameLayout>
 
-    <!--    优化成立体的人体模型-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/other_layout"
         android:layout_width="0dp"

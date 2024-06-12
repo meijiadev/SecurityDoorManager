@@ -11,8 +11,7 @@ import com.sjb.securitydoormanager.databinding.FragmentRecordListBinding
 import com.sjb.securitydoormanager.ui.adapter.RecordListAdapter
 
 /**
- *
- *
+ *安检记录
  */
 class RecordListFragment : BaseMvFragment<FragmentRecordListBinding, BaseViewModel>() {
     private lateinit var recordListAdapter: RecordListAdapter
