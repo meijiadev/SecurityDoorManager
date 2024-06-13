@@ -66,13 +66,13 @@ class DataMcuProcess : DataProcBase() {
                     }
                     // 安检门返回参数指令
                     if (DataProtocol.funcCode == 0x02) {
+                        Logger.i("serialPort Receive：$msg")
                         // 普通门
                         if (cmdLen == 35) {
 
                         }
                         // 手机安检门
                         if (cmdLen == 97) {
-                            Logger.i("serialPort Receive：$msg")
                             phoneDoorArgParse(oneCmd)
                         }
 
@@ -231,22 +231,115 @@ class DataMcuProcess : DataProcBase() {
         val zone6Spl = data[13].toInt() * 128 + data[14].toInt()
 
         val overallSpl = data[19].toInt() * 128 + data[20].toInt()
-
+        Logger.i(
+            "当前整体灵敏度：$overallSpl,\n " +
+                    "1区灵敏度：$zone1Spl \n" +
+                    "2区灵敏度：$zone2Spl \n" +
+                    "3区灵敏度：$zone3Spl \n" +
+                    "4区灵敏度：$zone4Spl \n" +
+                    "5区灵敏度：$zone5Spl \n" +
+                    "6区灵敏度：$zone6Spl"
+        )
         val zones = data[21].toInt() and 0x1f
         when (zones) {
             // 6区
             0b00000 -> {
-
+                Logger.i("当前设置的是6区门")
             }
             // 12 区
             0b00001 -> {
-
+                Logger.i("当前设置的是12区门")
             }
             // 18 区
             0b00010 -> {
-
+                Logger.i("当前设置的是18区门")
             }
         }
+
+        val frequency = data[22].toInt()
+        Logger.i("当前频点：$frequency")
+        //6--2位：语言0:中文  1:英文   2:土耳其语   3:俄语   4:波兰语
+        //第0位：语言锁      0:语言可选          1:只有英文
+        val languageLock = data[23].toInt() and 0b0000001
+        val language = data[23].toInt().shr(2)  //右移2位
+        Logger.i("语言锁：$languageLock,当前语言$language,原始数据：${data[23].toInt().toString(2)}")
+        //6位：开机自动设频   0：否   1：是
+        //5位：上电自动开机   0：是   1：否
+        //4位：报警模式       0：挡住红外触发   1：飞物报警
+        //3~0位：0：测温测金属门  1：测温门   2：普通测金属门  3：便携门
+        //        4：手机门        5：带测温手机门
+        // 获取安检门的类型
+        val doorType = data[24].toInt() and 0b00001111
+        // 报警模式
+        val alarmMode = data[24].toInt().shr(4) and 0b00000001
+        val powerOnAuto = data[24].toInt().shr(5) and 0b00000001
+        val freOnAuto = data[24].toInt().shr(6) and 0b00000001
+        Logger.i(
+            "原始数据：${data[24].toInt().toString(2)} \n" +
+                    "安检门类型：$doorType \n" +
+                    "报警模式：$alarmMode \n" +
+                    "上电自动开机:$powerOnAuto \n" +
+                    "上电自动设频:$freOnAuto"
+        )
+        //5~4位：探测模式    0:所有金属   1:探测铁磁物     2:探测非铁磁物
+        //3~2位：红外计数模式  0:统一计数        1:前后分别计数
+        //                     2:前加后减         3:前减后加
+        //（tance_mode和IR_mode这两个参数对手机门无意义，可以不管）
+        //1~0位：闸机动作    00: 报警打开        01: 报警关闭
+        //                    10: 不报警开        11: 不报警关
+        val brakeOpera = data[25].toInt() and 0b00000011
+        //3~0位：铃声         0000~1001  铃声0~9
+        val ringtones = data[26].toInt()
+        // 休眠时间(0~99分钟），stand_time分钟内没人通过安检门，安检门进入休眠状态，有人通过自动唤醒。stand_time设置为0表示永不休眠
+        val standTime = data[27].toInt()
+        // 屏幕亮度 0--100
+        val lightValue = data[28].toInt()
+        // 音量：6~0位 0--------9(预留后续升级到0----100)
+        val volume = data[30].toInt()
+        val keyVolume = data[31].toInt()
+        //6~0位  0----9：报警时LED灯亮的时间，步进0.5S
+        val ledDelay = data[32].toInt()
+        //报警持续的时间 6~0位  0----9：报警时铃声持续时间，步进0.5S
+        val alarmDelay = data[33].toInt()
+        Logger.i(
+            "铃声：$ringtones \n" +
+                    "休眠时间：$standTime \n" +
+                    "屏幕亮度：$lightValue \n" +
+                    "音量：$volume \n" +
+                    "按键音量：$keyVolume \n" +
+                    "报警时led灯亮时间：$ledDelay \n" +
+                    "报警持续的时间：$alarmDelay"
+        )
+        // 手机门相关特有参数
+        // 1-8区报手机灵敏度 0~999
+        val phoneSensi1 = data[34].toInt() * 128 + data[35].toInt()
+        val phoneSensi2 = data[36].toInt() * 128 + data[37].toInt()
+        val phoneSensi3 = data[38].toInt() * 128 + data[39].toInt()
+        val phoneSensi4 = data[40].toInt() * 128 + data[41].toInt()
+        val phoneSensi5 = data[42].toInt() * 128 + data[43].toInt()
+        val phoneSensi6 = data[44].toInt() * 128 + data[45].toInt()
+        val phoneSensi7 = data[46].toInt() * 128 + data[47].toInt()
+        val phoneSensi8 = data[48].toInt() * 128 + data[49].toInt()
+        Logger.i("1-8区手机报警的灵敏度：$phoneSensi1,\n $phoneSensi2,\n $phoneSensi3,\n $phoneSensi4,\n $phoneSensi5,\n $phoneSensi6,\n $phoneSensi7,\n $phoneSensi8")
+        //  磁性报警灵敏度0~999，数值越小灵敏度越高。被测物磁性超过设置的灵敏度时报警（类似金属量超过金属灵敏度）。所有区都是一样的灵敏度
+        val magnetism0 = data[50].toInt() * 128 + data[51].toInt()
+        // 磁性金属比值灵敏度0~999，用来辅助判断金属分类。主要用于判断磁铁，带磁工具刀枪和耳机等。这个数值越小越容易报这几种物品
+        val magnetism1 = data[52].toInt() * 128 + data[53].toInt()
+        //磁性金属灵敏度0~999 ,磁性超过这个值的金属划分到磁性金属大类（工具刀枪，保温杯，雨伞，铁制品，手机等），然后在其他条件细分，磁性小于这个值划分到非磁金属大类（铜、铝、铅、金、银等）
+        val magnetism2 = data[54].toInt() * 128 + data[55].toInt()
+        // 老人机磁性灵敏度：老人机的金属量超过金属灵敏度，磁性超过老人机磁性灵敏度就报手机（不管金属幅度有没有超过报手机灵敏度）
+        val magnetism3 = data[56].toInt() * 128 + data[57].toInt()
+
+        // data[58]-data[68]    01 02 03 04 05 06 07 08 09 0a 0b    1-11
+        //识别为1类金属，报警成A_metal_type[0]类
+        //示例：A_metal_type[0]=6；安检门识别到通过的金属为1类（工具刀枪），报警为6类（电子产品） 暂不处理
+        //data[69]-data[72] 识别为某种金属怎么报警 暂不处理
+        // data[73]-data[94] 金属通过安检门时，相位落在phase_s[`][`]与phase_s[`][`]之间识别为*类金属 暂不处理
+
+        //工作模式:
+        //1:违禁品探测模式  2:电子产品探测模式  3:违禁品加电子产品探测模式
+        //4:全金属探测模式  10-----14:自定义模式
+        val workMode = data[95]
     }
 
     /**
@@ -268,7 +361,7 @@ class DataMcuProcess : DataProcBase() {
     private fun hexToBinaryArray(hexByte: Byte): BooleanArray {
         val binaryArray = BooleanArray(7)
         var n = hexByte.toInt() and 0xFF // 确保为正数
-        Logger.i("hexByte：$n")
+        // Logger.i("hexByte：$n")
         for (j in 0..7) {
             if (j != 0) {
                 binaryArray[j - 1] =

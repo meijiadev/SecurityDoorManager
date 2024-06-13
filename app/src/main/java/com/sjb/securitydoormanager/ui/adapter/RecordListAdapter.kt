@@ -16,8 +16,8 @@ class RecordListAdapter(layoutId: Int) : BaseQuickAdapter<RecordData, BaseViewHo
 
     override fun convert(holder: BaseViewHolder, item: RecordData) {
         holder.getView<AppCompatTextView>(R.id.time_tv).text = item.time
-        holder.getView<AppCompatTextView>(R.id.mode_tv).text = item.mode
-        holder.getView<AppCompatTextView>(R.id.status_tv).text = item.status
+        holder.getView<AppCompatTextView>(R.id.mode_tv).text = item.zone
+        holder.getView<AppCompatTextView>(R.id.status_tv).text = item.result
 
     }
 

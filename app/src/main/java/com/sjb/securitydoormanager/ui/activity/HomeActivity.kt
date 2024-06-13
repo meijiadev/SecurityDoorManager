@@ -44,6 +44,9 @@ import com.sjb.securitydoormanager.ui.model.IDFaceViewModel
 import com.sjb.securitydoormanager.ui.model.MqttSerModel
 import com.sjb.securitydoormanager.veriface.DrawUtils
 import com.ys.rkapi.MyManager
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.util.*
 
@@ -223,22 +226,26 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
         updateTime()
         TimeThread().start()
         viewModel.initIDR()
-        Handler().postDelayed({
+        MainScope().launch {
+            delay(1000)
             initPermission()
             val serialManager = SerialPortManager.instance
             serialManager.init()
             serialManager.setIData(mcuProcess)
             serialManager.startRead()
+            delay(100)
             // 协议建立链接
             serialManager.sendMsg(DataProtocol.connectData)
+            delay(200)
             // 只要有人过就上传数据
             serialManager.sendMsg(DataProtocol.data_0x04)
+            delay(200)
             //要求安检门上传参数
             serialManager.sendMsg(DataProtocol.data_0x02)
             viewModel.startRead()
             mqttSerModel.initMqttSer()
             binding.scanView.startScanAnim()
-        }, 1000)
+        }
 
     }
 
