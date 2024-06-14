@@ -37,6 +37,7 @@ import com.sjb.securitydoormanager.serialport.DataMcuProcess
 import com.sjb.securitydoormanager.serialport.DataProtocol
 import com.sjb.securitydoormanager.serialport.SerialPortManager
 import com.sjb.securitydoormanager.ui.dialog.IDCardDialog
+import com.sjb.securitydoormanager.ui.dialog.SettingDialog
 import com.sjb.securitydoormanager.ui.fragment.RecordListFragment
 import com.sjb.securitydoormanager.ui.fragment.TotalDataFragment
 import com.sjb.securitydoormanager.ui.model.HomeViewModel
@@ -275,9 +276,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
         mcuProcess.locationEvent.observe(this) {
             binding.tvLocation.text = it
         }
-    }
 
-    override fun initViewObservable() {
         updateUIAction.observe(this) {
             it?.let {
                 updateTime()
@@ -287,6 +286,18 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
             if (it == "电子产品") {
                 speak()
             }
+        }
+    }
+
+    override fun initViewObservable() {
+        // 点击设置按钮
+        binding.settingIv.setOnClickListener {
+            val settingDialog = SettingDialog(this)
+            XPopup.Builder(this)
+                .isViewMode(true)
+                .popupAnimation(PopupAnimation.TranslateFromBottom)
+                .asCustom(settingDialog)
+                .show()
         }
     }
 

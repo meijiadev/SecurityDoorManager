@@ -1,5 +1,6 @@
 package com.sjb.securitydoormanager.serialport
 
+import androidx.lifecycle.MutableLiveData
 import com.kunminx.architecture.ui.callback.UnPeekLiveData
 import com.orhanobut.logger.Logger
 import java.util.ArrayDeque
@@ -15,6 +16,8 @@ class DataMcuProcess : DataProcBase() {
     var passNumberEvent = UnPeekLiveData<Int>()         // 通过的人数
     var alarmNumberEvent = UnPeekLiveData<Int>()        // 通过的报警次数
     var locationEvent = UnPeekLiveData<String>()        // 报警的位置
+
+    var doorParamEvent = MutableLiveData<ByteArray>()    // 安检门参数
 
     var enterType = 0                  // 进入的方向 0： 从前往后进   1：从后往前
 
@@ -222,6 +225,7 @@ class DataMcuProcess : DataProcBase() {
      * 手机安检门参数解析
      */
     private fun phoneDoorArgParse(data: ByteArray) {
+        doorParamEvent.postValue(data)
         // 1区的灵敏度  0-999
         val zone1Spl = data[3].toInt() * 128 + data[4].toInt()
         val zone2Spl = data[5].toInt() * 128 + data[6].toInt()
@@ -243,15 +247,15 @@ class DataMcuProcess : DataProcBase() {
         val zones = data[21].toInt() and 0x1f
         when (zones) {
             // 6区
-            0b00000 -> {
+            0b01101 -> {
                 Logger.i("当前设置的是6区门")
             }
             // 12 区
-            0b00001 -> {
+            0b01110 -> {
                 Logger.i("当前设置的是12区门")
             }
             // 18 区
-            0b00010 -> {
+            0b01111 -> {
                 Logger.i("当前设置的是18区门")
             }
         }
@@ -329,7 +333,7 @@ class DataMcuProcess : DataProcBase() {
         val magnetism2 = data[54].toInt() * 128 + data[55].toInt()
         // 老人机磁性灵敏度：老人机的金属量超过金属灵敏度，磁性超过老人机磁性灵敏度就报手机（不管金属幅度有没有超过报手机灵敏度）
         val magnetism3 = data[56].toInt() * 128 + data[57].toInt()
-
+        Logger.i("磁性各个参数：$magnetism0, \n $magnetism1, \n $magnetism2, \n $magnetism3")
         // data[58]-data[68]    01 02 03 04 05 06 07 08 09 0a 0b    1-11
         //识别为1类金属，报警成A_metal_type[0]类
         //示例：A_metal_type[0]=6；安检门识别到通过的金属为1类（工具刀枪），报警为6类（电子产品） 暂不处理
@@ -337,9 +341,10 @@ class DataMcuProcess : DataProcBase() {
         // data[73]-data[94] 金属通过安检门时，相位落在phase_s[`][`]与phase_s[`][`]之间识别为*类金属 暂不处理
 
         //工作模式:
-        //1:违禁品探测模式  2:电子产品探测模式  3:违禁品加电子产品探测模式
-        //4:全金属探测模式  10-----14:自定义模式
+        //11:违禁品探测模式  12:电子产品探测模式  13:违禁品加电子产品探测模式
+        //14:全金属探测模式  10-----14:自定义模式
         val workMode = data[95]
+        Logger.i("工作模式：$workMode")
     }
 
     /**

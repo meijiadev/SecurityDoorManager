@@ -98,4 +98,6 @@ dependencies {
 //    implementation 'me.relex:circleindicator:2.1.6'
     //万能适配器
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.7'
+
+
 }
