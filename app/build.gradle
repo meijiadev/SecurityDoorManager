@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.sjb.securitydoormanager"
-        minSdk 28
+        minSdk 23
         targetSdk 33  // Android 13
         versionCode 1
         versionName "1.0"
@@ -85,7 +85,7 @@ dependencies {
     implementation "androidx.room:room-runtime:2.2.5"
     //kotlin下使用
     kapt "androidx.room:room-compiler:2.2.5"
-    implementation 'com.github.li-xiaojun:XPopup:2.8.0'
+    //implementation 'com.github.li-xiaojun:XPopup:2.9.16'
     // 网络请求框架：https://github.com/getActivity/EasyHttp
     implementation 'com.github.getActivity:EasyHttp:11.8'
     // OkHttp 框架：https://github.com/square/okhttp
@@ -99,5 +99,5 @@ dependencies {
     //万能适配器
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.7'
 
-
+    implementation 'com.github.JessYanCoding:AndroidAutoSize:v1.2.1'
 }

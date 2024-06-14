@@ -1,15 +1,451 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/home_bg"
-    >
+    android:background="@mipmap/home_bg">
+
     <include
-        layout="@layout/layout_title"
         android:id="@+id/ly_title"
-        />
+        layout="@layout/layout_title" />
+
+    <LinearLayout
+        android:id="@+id/ll_door"
+        android:layout_width="136dp"
+        android:layout_height="360dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="40dp"
+        android:background="@mipmap/door"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ly_title">
 
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="63dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="六区: "
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tv_zone6"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="960"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="五区: "
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tv_zone5"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="960"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="四区: "
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tv_zone4"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="960"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="三区: "
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tv_zone3"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="960"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="一区: "
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tv_zone2"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="960"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="一区: "
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tv_zone1"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="960"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/text_sens1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="10dp"
+        android:text="一区灵敏度："
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@id/ll_door"
+        app:layout_constraintTop_toBottomOf="@id/ly_title" />
+
+    <SeekBar
+        android:id="@+id/seekbar_zone_1"
+        android:layout_width="450dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="15dp"
+        android:max="999"
+        android:progress="900"
+        android:progressDrawable="@drawable/horizontal_style"
+        android:thumb="@drawable/thumb_normal"
+        app:layout_constraintStart_toEndOf="@id/iv_zone_1_reduce"
+        app:layout_constraintTop_toBottomOf="@id/text_sens1" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_zone_1_reduce"
+        android:layout_width="40dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="5dp"
+        android:src="@mipmap/reduce_icon"
+        app:layout_constraintStart_toEndOf="@id/ll_door"
+        app:layout_constraintTop_toBottomOf="@id/text_sens1" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_zone_1_add"
+        android:layout_width="40dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="5dp"
+        android:src="@mipmap/add_icon"
+        app:layout_constraintStart_toEndOf="@id/seekbar_zone_1"
+        app:layout_constraintTop_toBottomOf="@id/text_sens1" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/text_sens2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="10dp"
+        android:text="二区灵敏度："
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@id/ll_door"
+        app:layout_constraintTop_toBottomOf="@id/seekbar_zone_1" />
+
+    <SeekBar
+        android:id="@+id/seekbar_zone_2"
+        android:layout_width="450dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="15dp"
+        android:max="999"
+        android:progress="900"
+        android:progressDrawable="@drawable/horizontal_style"
+        android:thumb="@drawable/thumb_normal"
+        app:layout_constraintStart_toEndOf="@id/iv_zone_2_reduce"
+        app:layout_constraintTop_toBottomOf="@id/text_sens2" />
+
+    <ImageView
+        android:id="@+id/iv_zone_2_reduce"
+        android:layout_width="40dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="5dp"
+        android:src="@mipmap/reduce_icon"
+        app:layout_constraintStart_toEndOf="@id/ll_door"
+        app:layout_constraintTop_toBottomOf="@id/text_sens2" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_zone_2_add"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="30dp"
+        android:layout_marginTop="5dp"
+        android:src="@mipmap/add_icon"
+        app:layout_constraintStart_toEndOf="@id/seekbar_zone_2"
+        app:layout_constraintTop_toBottomOf="@id/text_sens2" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/text_sens3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="10dp"
+        android:text="三区灵敏度："
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@id/ll_door"
+        app:layout_constraintTop_toBottomOf="@id/seekbar_zone_2" />
+
+    <SeekBar
+        android:id="@+id/seekbar_zone_3"
+        android:layout_width="450dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="15dp"
+        android:max="999"
+        android:progress="900"
+        android:progressDrawable="@drawable/horizontal_style"
+        android:thumb="@drawable/thumb_normal"
+        app:layout_constraintStart_toEndOf="@id/iv_zone_3_reduce"
+        app:layout_constraintTop_toBottomOf="@id/text_sens3" />
+
+    <ImageView
+        android:id="@+id/iv_zone_3_reduce"
+        android:layout_width="40dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="5dp"
+        android:src="@mipmap/reduce_icon"
+        app:layout_constraintStart_toEndOf="@id/ll_door"
+        app:layout_constraintTop_toBottomOf="@id/text_sens3" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_zone_3_add"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="30dp"
+        android:layout_marginTop="5dp"
+        android:src="@mipmap/add_icon"
+        app:layout_constraintStart_toEndOf="@id/seekbar_zone_3"
+        app:layout_constraintTop_toBottomOf="@id/text_sens3" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/text_sens4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="10dp"
+        android:text="四区灵敏度："
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@id/ll_door"
+        app:layout_constraintTop_toBottomOf="@id/seekbar_zone_3" />
+
+    <SeekBar
+        android:id="@+id/seekbar_zone_4"
+        android:layout_width="450dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="15dp"
+        android:max="999"
+        android:progress="900"
+        android:progressDrawable="@drawable/horizontal_style"
+        android:thumb="@drawable/thumb_normal"
+        app:layout_constraintStart_toEndOf="@id/iv_zone_4_reduce"
+        app:layout_constraintTop_toBottomOf="@id/text_sens4" />
+
+    <ImageView
+        android:id="@+id/iv_zone_4_reduce"
+        android:layout_width="40dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="5dp"
+        android:src="@mipmap/reduce_icon"
+        app:layout_constraintStart_toEndOf="@id/ll_door"
+        app:layout_constraintTop_toBottomOf="@id/text_sens4" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_zone_4_add"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="30dp"
+        android:layout_marginTop="5dp"
+        android:src="@mipmap/add_icon"
+        app:layout_constraintStart_toEndOf="@id/seekbar_zone_4"
+        app:layout_constraintTop_toBottomOf="@id/text_sens4" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/text_sens5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="10dp"
+        android:text="五区灵敏度："
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@id/ll_door"
+        app:layout_constraintTop_toBottomOf="@id/seekbar_zone_4" />
+
+    <SeekBar
+        android:id="@+id/seekbar_zone_5"
+        android:layout_width="450dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="15dp"
+        android:max="999"
+        android:progress="900"
+        android:progressDrawable="@drawable/horizontal_style"
+        android:thumb="@drawable/thumb_normal"
+        app:layout_constraintStart_toEndOf="@id/iv_zone_5_reduce"
+        app:layout_constraintTop_toBottomOf="@id/text_sens5" />
+
+    <ImageView
+        android:id="@+id/iv_zone_5_reduce"
+        android:layout_width="40dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="5dp"
+        android:src="@mipmap/reduce_icon"
+        app:layout_constraintStart_toEndOf="@id/ll_door"
+        app:layout_constraintTop_toBottomOf="@id/text_sens5" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_zone_5_add"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="30dp"
+        android:layout_marginTop="5dp"
+        android:src="@mipmap/add_icon"
+        app:layout_constraintStart_toEndOf="@id/seekbar_zone_5"
+        app:layout_constraintTop_toBottomOf="@id/text_sens5" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/text_sens6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="10dp"
+        android:text="六区灵敏度："
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@id/ll_door"
+        app:layout_constraintTop_toBottomOf="@id/seekbar_zone_5" />
+
+    <SeekBar
+        android:id="@+id/seekbar_zone_6"
+        android:layout_width="450dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="15dp"
+        android:max="999"
+        android:progress="900"
+        android:progressDrawable="@drawable/horizontal_style"
+        android:thumb="@drawable/thumb_normal"
+        app:layout_constraintStart_toEndOf="@id/iv_zone_6_reduce"
+        app:layout_constraintTop_toBottomOf="@id/text_sens6" />
+
+    <ImageView
+        android:id="@+id/iv_zone_6_reduce"
+        android:layout_width="40dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="5dp"
+        android:src="@mipmap/reduce_icon"
+        app:layout_constraintStart_toEndOf="@id/ll_door"
+        app:layout_constraintTop_toBottomOf="@id/text_sens6" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_zone_6_add"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="30dp"
+        android:layout_marginTop="5dp"
+        android:src="@mipmap/add_icon"
+        app:layout_constraintStart_toEndOf="@id/seekbar_zone_6"
+        app:layout_constraintTop_toBottomOf="@id/text_sens6" />
+
+    <com.hjq.shape.view.ShapeButton
+        android:id="@+id/bt_save"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="100dp"
+        android:gravity="center"
+        android:text="保存"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/seekbar_zone_6"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:shape_radius="18dp"
+        app:shape_solidColor="@color/gold" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -65,7 +65,6 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
     private var isPermissionGranted = false
     private lateinit var faceModel: IDFaceViewModel
     private lateinit var mqttSerModel: MqttSerModel
-    private val mcuProcess = DataMcuProcess()
 
     /**
      * 身份证相关信息
@@ -81,6 +80,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
      * 抓拍的图片
      */
     private var captureBitmap: Bitmap? = null
+
 
     override fun getViewBinding(): ActivityHomeBinding {
         return ActivityHomeBinding.inflate(layoutInflater)
@@ -184,7 +184,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
         binding.surfaceViewRect.setZOrderMediaOverlay(true)
         binding.surfaceViewRect.holder.setFormat(PixelFormat.TRANSLUCENT)
         switchFragment(totalDataFragment)
-        totalDataFragment.setMcu(mcuProcess)
+        totalDataFragment.setMcu(DataMcuProcess.instance)
     }
 
     /**
@@ -228,6 +228,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
         TimeThread().start()
         viewModel.initIDR()
         MainScope().launch {
+            val mcuProcess=DataMcuProcess.instance
             delay(1000)
             initPermission()
             val serialManager = SerialPortManager.instance
@@ -267,13 +268,13 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
 
     override fun initListener() {
 
-        mcuProcess.alarmGoodsEvent.observe(this) {
+        DataMcuProcess.instance.alarmGoodsEvent.observe(this) {
             if (!binding.tvType.text.toString().contains(it)) {
                 binding.tvType.text = it
             }
 
         }
-        mcuProcess.locationEvent.observe(this) {
+        DataMcuProcess.instance.locationEvent.observe(this) {
             binding.tvLocation.text = it
         }
 
@@ -282,7 +283,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
                 updateTime()
             }
         }
-        mcuProcess.alarmGoodsEvent.observe(this) {
+        DataMcuProcess.instance.alarmGoodsEvent.observe(this) {
             if (it == "电子产品") {
                 speak()
             }
@@ -292,7 +293,9 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
     override fun initViewObservable() {
         // 点击设置按钮
         binding.settingIv.setOnClickListener {
-            val settingDialog = SettingDialog(this)
+            val settingDialog = SettingDialog(this).sensitivityOnClick {
+                startActivity(SensitivityActivity::class.java)
+            }
             XPopup.Builder(this)
                 .isViewMode(true)
                 .popupAnimation(PopupAnimation.TranslateFromBottom)

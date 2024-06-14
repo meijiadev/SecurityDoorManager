@@ -3,6 +3,7 @@ package com.sjb.securitydoormanager.serialport
 import androidx.lifecycle.MutableLiveData
 import com.kunminx.architecture.ui.callback.UnPeekLiveData
 import com.orhanobut.logger.Logger
+import com.sjb.securitydoormanager.bean.SensitivityData
 import java.util.ArrayDeque
 import kotlin.experimental.and
 
@@ -11,7 +12,7 @@ import kotlin.experimental.and
  * date: 2023/1/12 9:42
  * desc: DataMcuProcess 数据最终解析处理的类
  */
-class DataMcuProcess : DataProcBase() {
+class DataMcuProcess private constructor() : DataProcBase() {
     var alarmGoodsEvent = UnPeekLiveData<String>()      // 报警物品
     var passNumberEvent = UnPeekLiveData<Int>()         // 通过的人数
     var alarmNumberEvent = UnPeekLiveData<Int>()        // 通过的报警次数
@@ -19,7 +20,15 @@ class DataMcuProcess : DataProcBase() {
 
     var doorParamEvent = MutableLiveData<ByteArray>()    // 安检门参数
 
+    var sensitivityEvent = MutableLiveData<SensitivityData>()
+
     var enterType = 0                  // 进入的方向 0： 从前往后进   1：从后往前
+
+    companion object {
+        val instance: DataMcuProcess by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
+            DataMcuProcess()
+        }
+    }
 
     override fun findCmdProc(queueByte: ArrayDeque<Byte>): Boolean {
         val buf = queueByte.toByteArray()
@@ -235,6 +244,9 @@ class DataMcuProcess : DataProcBase() {
         val zone6Spl = data[13].toInt() * 128 + data[14].toInt()
 
         val overallSpl = data[19].toInt() * 128 + data[20].toInt()
+        val sensitivityData = SensitivityData(
+            zone1Spl, zone2Spl, zone3Spl, zone4Spl, zone5Spl, zone6Spl, overallSpl
+        )
         Logger.i(
             "当前整体灵敏度：$overallSpl,\n " +
                     "1区灵敏度：$zone1Spl \n" +
@@ -244,6 +256,7 @@ class DataMcuProcess : DataProcBase() {
                     "5区灵敏度：$zone5Spl \n" +
                     "6区灵敏度：$zone6Spl"
         )
+        sensitivityEvent.postValue(sensitivityData)
         val zones = data[21].toInt() and 0x1f
         when (zones) {
             // 6区

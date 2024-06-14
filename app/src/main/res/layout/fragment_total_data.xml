@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="30dp"
         android:text="安检门检测统计"
         android:textColor="@color/text_c6cbff"
         android:textSize="22sp"
@@ -22,13 +22,13 @@
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/pie_chart"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.6"
+        app:layout_constraintHeight_percent="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_tv"
         app:layout_constraintWidth_percent="0.85"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="10dp"
+
         android:layout_marginTop="10dp" />
 
     <com.hjq.shape.view.ShapeTextView
@@ -41,16 +41,14 @@
         app:shape_strokeWidth="1dp"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        android:layout_marginStart="25dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:gravity="center"
-        android:paddingStart="25dp"
-
-
-        android:paddingEnd="10dp"
         android:text="通过总数：100"
         android:textColor="@color/text_c6cbff"
         android:textSize="20sp"
+
+        android:singleLine="true"
         android:textStyle="bold" />
 
     <com.hjq.shape.view.ShapeTextView
@@ -64,14 +62,14 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="@dimen/dp_10"
         android:layout_toRightOf="@id/pass_total_tv"
         android:gravity="center"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
         android:text="净通过数：87"
         android:textColor="@color/text_c6cbff"
         android:textSize="20sp"
+        android:singleLine="true"
         android:textStyle="bold" />
 
     <com.hjq.shape.view.ShapeTextView
@@ -84,14 +82,13 @@
         app:shape_strokeWidth="1dp"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        android:layout_marginStart="25dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:gravity="center"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
         android:text="电子产品报警：100"
         android:textColor="@color/text_c6cbff"
         android:textSize="18sp"
+        android:singleLine="true"
         android:textStyle="bold" />
 
     <com.hjq.shape.view.ShapeTextView
@@ -104,15 +101,15 @@
         app:shape_strokeWidth="1dp"
         android:layout_width="0dp"
         android:layout_height="60dp"
+        android:layout_marginStart="@dimen/dp_10"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="25dp"
+        android:layout_marginEnd="10dp"
         android:layout_toRightOf="@id/pass_total_tv"
         android:gravity="center"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
         android:text="其他报警：87"
         android:textColor="@color/text_c6cbff"
         android:textSize="20sp"
+        android:singleLine="true"
         android:textStyle="bold" />
 
 
