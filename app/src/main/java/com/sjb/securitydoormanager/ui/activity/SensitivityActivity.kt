@@ -4,11 +4,16 @@ import android.widget.SeekBar
 import com.orhanobut.logger.Logger
 import com.sjb.base.base.BaseMvActivity
 import com.sjb.base.base.BaseViewModel
+import com.sjb.base.ext.dismissLoading
+import com.sjb.base.ext.showLoading
 import com.sjb.securitydoormanager.bean.SensitivityData
 import com.sjb.securitydoormanager.databinding.ActivitySensitivityBinding
 import com.sjb.securitydoormanager.serialport.DataMcuProcess
 import com.sjb.securitydoormanager.serialport.DataProtocol
 import com.sjb.securitydoormanager.serialport.SerialPortManager
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewModel>(),
     SeekBar.OnSeekBarChangeListener {
@@ -21,6 +26,10 @@ class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewM
     private var zone6Progress = 0
 
     private var sensitivityData: SensitivityData? = null
+
+    // 是否点击了保存按钮
+    private var isTouchSaveBt = false
+
 
     override fun getViewBinding(): ActivitySensitivityBinding {
         return ActivitySensitivityBinding.inflate(layoutInflater)
@@ -104,9 +113,13 @@ class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewM
 
 
             btSave.setOnClickListener {
-                if (zone1Progress != sensitivityData?.zone1s) {
+                isTouchSaveBt = true
+                saveSensitivityToDoor()
+            }
 
-                }
+            lyTitle.ivBack.setOnClickListener {
+                isTouchSaveBt = false
+                saveSensitivityToDoor()
             }
         }
     }
@@ -195,43 +208,114 @@ class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewM
 
     override fun onStopTrackingTouch(seekBar: SeekBar?) {
         Logger.i("----${seekBar?.id},onStopTrackingTouch")
-        when (seekBar?.id) {
-            binding.seekbarZone1.id -> {
+    }
+
+    /**
+     * 保存数据到安检门
+     */
+    private fun saveSensitivityToDoor() {
+        MainScope().launch {
+            if (isTouchSaveBt)
+                showLoading("正在保存中...")
+            if (zone1Progress != sensitivityData?.zone1s) {
                 val byte3 = (zone1Progress.shr(7) and 0x7f).toByte()
                 val byte4 = (zone1Progress and 0x7f).toByte()
                 val data = byteArrayOf(
                     DataProtocol.HEAD_CMD_1,
                     0X06,
-                    0x0c,
+                    0x0c,                   // 12-19 表示 1-8区
                     byte3,
                     byte4,
                     0x7f
                 )
                 SerialPortManager.instance.sendMsg(data)
+                delay(50)
+            }
+            if (zone2Progress != sensitivityData?.zone2s) {
+                val byte3 = (zone2Progress.shr(7) and 0x7f).toByte()
+                val byte4 = (zone2Progress and 0x7f).toByte()
+                val data = byteArrayOf(
+                    DataProtocol.HEAD_CMD_1,
+                    0X06,
+                    0x0d,             //13
+                    byte3,
+                    byte4,
+                    0x7f
+                )
+                SerialPortManager.instance.sendMsg(data)
+                delay(50)
+            }
+            if (zone3Progress != sensitivityData?.zone3s) {
+                val byte3 = (zone3Progress.shr(7) and 0x7f).toByte()
+                val byte4 = (zone3Progress and 0x7f).toByte()
+                val data = byteArrayOf(
+                    DataProtocol.HEAD_CMD_1,
+                    0X06,
+                    0x0e,                //14
+                    byte3,
+                    byte4,
+                    0x7f
+                )
+                SerialPortManager.instance.sendMsg(data)
+                delay(50)
             }
 
-            binding.seekbarZone2.id -> {
-
+            if (zone4Progress != sensitivityData?.zone4s) {
+                val byte3 = (zone4Progress.shr(7) and 0x7f).toByte()
+                val byte4 = (zone4Progress and 0x7f).toByte()
+                val data = byteArrayOf(
+                    DataProtocol.HEAD_CMD_1,
+                    0X06,
+                    0x0f,              //15
+                    byte3,
+                    byte4,
+                    0x7f
+                )
+                SerialPortManager.instance.sendMsg(data)
+                delay(50)
+            }
+            if (zone5Progress != sensitivityData?.zone5s) {
+                val byte3 = (zone5Progress.shr(7) and 0x7f).toByte()
+                val byte4 = (zone5Progress and 0x7f).toByte()
+                val data = byteArrayOf(
+                    DataProtocol.HEAD_CMD_1,
+                    0X06,
+                    0x10,         //16
+                    byte3,
+                    byte4,
+                    0x7f
+                )
+                SerialPortManager.instance.sendMsg(data)
+                delay(50)
             }
 
-            binding.seekbarZone3.id -> {
-
+            if (zone6Progress != sensitivityData?.zone6s) {
+                val byte3 = (zone6Progress.shr(7) and 0x7f).toByte()
+                val byte4 = (zone6Progress and 0x7f).toByte()
+                val data = byteArrayOf(
+                    DataProtocol.HEAD_CMD_1,
+                    0X06,
+                    0x11,         //17
+                    byte3,
+                    byte4,
+                    0x7f
+                )
+                SerialPortManager.instance.sendMsg(data)
+                delay(50)
             }
-
-            binding.seekbarZone4.id -> {
-
-            }
-
-            binding.seekbarZone5.id -> {
-
-            }
-
-            binding.seekbarZone6.id -> {
-
-            }
+            //要求安检门上传参数
+            SerialPortManager.instance.sendMsg(DataProtocol.data_0x02)
+            if (isTouchSaveBt)
+                dismissLoading()
         }
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        super.onBackPressed()
+        isTouchSaveBt = false
+        saveSensitivityToDoor()
+    }
 
 
 }
