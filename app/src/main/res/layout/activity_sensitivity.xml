@@ -173,6 +173,31 @@
     </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ll_door"
+        android:layout_marginStart="100dp"
+        android:text="整体："
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:layout_marginTop="10dp"
+        android:id="@+id/text_overall"
+        />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/text_overall"
+        app:layout_constraintTop_toBottomOf="@id/ll_door"
+        android:layout_marginTop="10dp"
+        android:text="260"
+        android:textSize="22sp"
+        android:textColor="@color/white"
+        android:id="@+id/tv_zone_overall"
+        />
+
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/text_sens1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -430,20 +455,62 @@
         app:layout_constraintStart_toEndOf="@id/seekbar_zone_6"
         app:layout_constraintTop_toBottomOf="@id/text_sens6" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/text_overall_zone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="10dp"
+        android:text="整体灵敏度："
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@id/ll_door"
+        app:layout_constraintTop_toBottomOf="@id/seekbar_zone_6" />
+
+    <SeekBar
+        android:id="@+id/seekbar_zone_overall"
+        android:layout_width="450dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="15dp"
+        android:max="999"
+        android:progress="260"
+        android:progressDrawable="@drawable/horizontal_style"
+        android:thumb="@drawable/thumb_normal"
+        app:layout_constraintStart_toEndOf="@id/iv_zone_overall_reduce"
+        app:layout_constraintTop_toBottomOf="@id/text_overall_zone" />
+
+    <ImageView
+        android:id="@+id/iv_zone_overall_reduce"
+        android:layout_width="40dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="5dp"
+        android:src="@mipmap/reduce_icon"
+        app:layout_constraintStart_toEndOf="@id/ll_door"
+        app:layout_constraintTop_toBottomOf="@id/text_overall_zone" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_zone_overall_add"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="30dp"
+        android:layout_marginTop="5dp"
+        android:src="@mipmap/add_icon"
+        app:layout_constraintStart_toEndOf="@id/seekbar_zone_overall"
+        app:layout_constraintTop_toBottomOf="@id/text_overall_zone" />
+
     <com.hjq.shape.view.ShapeButton
         android:id="@+id/bt_save"
         android:layout_width="100dp"
         android:layout_height="40dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="100dp"
+        android:layout_marginEnd="20dp"
         android:gravity="center"
         android:text="保存"
-        android:visibility="gone"
+        android:visibility="visible"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/seekbar_zone_6"
+        app:layout_constraintTop_toBottomOf="@id/ly_title"
         app:layout_constraintBottom_toBottomOf="parent"
         app:shape_radius="18dp"
         app:shape_solidColor="@color/gold" />

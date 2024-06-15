@@ -228,7 +228,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
         TimeThread().start()
         viewModel.initIDR()
         MainScope().launch {
-            val mcuProcess=DataMcuProcess.instance
+            val mcuProcess = DataMcuProcess.instance
             delay(1000)
             initPermission()
             val serialManager = SerialPortManager.instance
@@ -295,6 +295,14 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
         binding.settingIv.setOnClickListener {
             val settingDialog = SettingDialog(this).sensitivityOnClick {
                 startActivity(SensitivityActivity::class.java)
+            }.frequencyOnClick {
+
+            }.zoneSelectOnClick {
+                startActivity(ZoneSettingActivity::class.java)
+            }.probeTypeOnclick {
+
+            }.recordQueryOnclick {
+
             }
             XPopup.Builder(this)
                 .isViewMode(true)

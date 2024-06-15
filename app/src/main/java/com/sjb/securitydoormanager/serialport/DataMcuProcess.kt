@@ -22,6 +22,8 @@ class DataMcuProcess private constructor() : DataProcBase() {
 
     var sensitivityEvent = MutableLiveData<SensitivityData>()
 
+    var zoneSettingEvent = MutableLiveData<Int>()
+
     var enterType = 0                  // 进入的方向 0： 从前往后进   1：从后往前
 
     companion object {
@@ -272,6 +274,7 @@ class DataMcuProcess private constructor() : DataProcBase() {
                 Logger.i("当前设置的是18区门")
             }
         }
+        zoneSettingEvent.postValue(zones)
 
         val frequency = data[22].toInt()
         Logger.i("当前频点：$frequency")

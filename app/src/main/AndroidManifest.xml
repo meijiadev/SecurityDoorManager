@@ -58,6 +58,9 @@
         <activity android:name=".ui.activity.SensitivityActivity"
             android:screenOrientation="sensorLandscape"
             tools:ignore="DiscouragedApi" />
+        <activity android:name=".ui.activity.ZoneSettingActivity"
+            />
+
         <service android:name="com.itfitness.mqttlibrary.MqttService"/>
     </application>
 

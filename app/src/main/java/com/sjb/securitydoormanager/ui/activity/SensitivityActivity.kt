@@ -25,6 +25,8 @@ class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewM
     private var zone5Progress = 0
     private var zone6Progress = 0
 
+    private var zoneOverallProgress = 0
+
     private var sensitivityData: SensitivityData? = null
 
     // 是否点击了保存按钮
@@ -110,6 +112,18 @@ class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewM
                 tvZone6.text = zone6Progress.toString()
             }
 
+            ivZoneOverallReduce.setOnClickListener {
+                zoneOverallProgress -= 1
+                seekbarZoneOverall.progress = zoneOverallProgress
+                tvZoneOverall.text = zoneOverallProgress.toString()
+            }
+
+            ivZoneOverallAdd.setOnClickListener {
+                zoneOverallProgress += 1
+                seekbarZoneOverall.progress = zoneOverallProgress
+                tvZoneOverall.text = zoneOverallProgress.toString()
+            }
+
 
 
             btSave.setOnClickListener {
@@ -120,6 +134,7 @@ class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewM
             lyTitle.ivBack.setOnClickListener {
                 isTouchSaveBt = false
                 saveSensitivityToDoor()
+                finish()
             }
         }
     }
@@ -132,6 +147,7 @@ class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewM
             seekbarZone4.setOnSeekBarChangeListener(this@SensitivityActivity)
             seekbarZone5.setOnSeekBarChangeListener(this@SensitivityActivity)
             seekbarZone6.setOnSeekBarChangeListener(this@SensitivityActivity)
+            seekbarZoneOverall.setOnSeekBarChangeListener(this@SensitivityActivity)
         }
     }
 
@@ -145,6 +161,7 @@ class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewM
                 zone4Progress = sensitivity.zone4s
                 zone5Progress = sensitivity.zone5s
                 zone6Progress = sensitivity.zone6s
+                zoneOverallProgress = sensitivity.zoneOverall
                 initZone()
             }
         }
@@ -158,12 +175,14 @@ class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewM
             tvZone4.text = zone4Progress.toString()
             tvZone5.text = zone5Progress.toString()
             tvZone6.text = zone6Progress.toString()
+            tvZoneOverall.text = zoneOverallProgress.toString()
             seekbarZone1.progress = zone1Progress
             seekbarZone2.progress = zone2Progress
             seekbarZone3.progress = zone3Progress
             seekbarZone4.progress = zone4Progress
             seekbarZone5.progress = zone5Progress
             seekbarZone6.progress = zone6Progress
+            seekbarZoneOverall.progress = zoneOverallProgress
         }
     }
 
@@ -199,6 +218,11 @@ class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewM
                 zone6Progress = progress
                 binding.tvZone6.text = msg
             }
+
+            binding.seekbarZoneOverall.id -> {
+                zoneOverallProgress = progress
+                binding.tvZoneOverall.text = msg
+            }
         }
     }
 
@@ -215,9 +239,13 @@ class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewM
      */
     private fun saveSensitivityToDoor() {
         MainScope().launch {
+            if (sensitivityData == null) {
+                toast("获取安检门灵敏度失败，请检查串口是否连接！")
+                return@launch
+            }
             if (isTouchSaveBt)
                 showLoading("正在保存中...")
-            if (zone1Progress != sensitivityData?.zone1s) {
+            if (sensitivityData?.zone1s != zone1Progress) {
                 val byte3 = (zone1Progress.shr(7) and 0x7f).toByte()
                 val byte4 = (zone1Progress and 0x7f).toByte()
                 val data = byteArrayOf(
@@ -303,6 +331,23 @@ class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewM
                 SerialPortManager.instance.sendMsg(data)
                 delay(50)
             }
+
+            // 看整体灵敏度是否修改，修改了就下发到安检门
+            if (zoneOverallProgress != sensitivityData?.zoneOverall) {
+                val byte3 = (zoneOverallProgress.shr(7) and 0x7f).toByte()
+                val byte4 = (zoneOverallProgress and 0x7f).toByte()
+                val data = byteArrayOf(
+                    DataProtocol.HEAD_CMD_1,
+                    0X06,
+                    0x14,         //20
+                    byte3,
+                    byte4,
+                    0x7f
+                )
+                SerialPortManager.instance.sendMsg(data)
+                delay(50)
+            }
+
             //要求安检门上传参数
             SerialPortManager.instance.sendMsg(DataProtocol.data_0x02)
             if (isTouchSaveBt)

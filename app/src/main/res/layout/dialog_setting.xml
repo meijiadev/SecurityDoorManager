@@ -1,80 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.hjq.shape.layout.ShapeConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="600dp"
     android:layout_height="400dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:layout_constraintWidth_percent="0.8"
     app:layout_constraintHeight_percent="0.5"
+    app:layout_constraintWidth_percent="0.8"
     app:shape_radius="18dp"
-    app:shape_solidColor="@color/white"
-    >
+    app:shape_solidColor="@color/white">
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="15dp"
-                >
+                android:layout_margin="20dp"
+                android:orientation="horizontal">
+
                 <com.hjq.shape.view.ShapeTextView
+                    android:id="@+id/tv_sensitivity"
                     android:layout_width="0dp"
                     android:layout_height="120dp"
                     android:layout_weight="0.2"
                     android:drawableTop="@mipmap/spl_icon"
-                    android:textColor="@color/white"
-                    android:text="灵敏度设置"
-                    android:textSize="20sp"
                     android:gravity="center"
-                    app:shape_radius="8dp"
-                    android:paddingTop="10dp"
                     android:paddingStart="10dp"
+                    android:paddingTop="10dp"
                     android:paddingEnd="10dp"
-                    app:shape_solidColor="@color/black60"
-                    android:id="@+id/tv_sensitivity"
-                    />
+                    android:text="灵敏度设置"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    app:shape_radius="8dp"
+                    app:shape_solidColor="@color/black60" />
+
                 <com.hjq.shape.view.ShapeTextView
+                    android:id="@+id/tv_fre"
                     android:layout_width="0dp"
                     android:layout_height="120dp"
+                    android:layout_marginStart="15dp"
                     android:layout_weight="0.2"
                     android:drawableTop="@mipmap/fre_icon"
-                    android:textColor="@color/white"
-                    android:text="工作频率"
-                    android:textSize="20sp"
                     android:gravity="center"
-                    app:shape_radius="8dp"
-                    android:paddingTop="10dp"
                     android:paddingStart="10dp"
+                    android:paddingTop="10dp"
                     android:paddingEnd="10dp"
-                    app:shape_solidColor="@color/black60"
-                    android:layout_marginStart="15dp"
-                    android:id="@+id/tv_fre"
-                    />
+                    android:text="工作频率"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    app:shape_radius="8dp"
+                    app:shape_solidColor="@color/black60" />
+
                 <com.hjq.shape.view.ShapeTextView
+                    android:id="@+id/tv_zone"
                     android:layout_width="0dp"
                     android:layout_height="120dp"
+                    android:layout_marginStart="15dp"
                     android:layout_weight="0.2"
                     android:drawableTop="@mipmap/zone_setting"
-                    android:textColor="@color/white"
-                    android:text="防区设置"
-                    android:textSize="20sp"
                     android:gravity="center"
-                    app:shape_radius="8dp"
-                    android:paddingTop="10dp"
                     android:paddingStart="10dp"
+                    android:paddingTop="10dp"
                     android:paddingEnd="10dp"
-                    app:shape_solidColor="@color/black60"
-                    android:layout_marginStart="15dp"
-                    android:id="@+id/tv_zone"
-                    />
+                    android:text="防区设置"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    app:shape_radius="8dp"
+                    app:shape_solidColor="@color/black60" />
 
                 <com.hjq.shape.view.ShapeTextView
                     android:id="@+id/tv_probe_type"
@@ -93,78 +90,77 @@
                     app:shape_radius="8dp"
                     app:shape_solidColor="@color/black60" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="15dp"
-                >
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="horizontal">
+
                 <com.hjq.shape.view.ShapeTextView
+                    android:id="@+id/tv_record_query"
                     android:layout_width="0dp"
                     android:layout_height="120dp"
                     android:layout_weight="0.2"
                     android:drawableTop="@mipmap/record_query"
-                    android:textColor="@color/white"
-                    android:text="记录查询"
-                    android:textSize="20sp"
                     android:gravity="center"
-                    app:shape_radius="8dp"
-                    android:paddingTop="10dp"
                     android:paddingStart="10dp"
+                    android:paddingTop="10dp"
                     android:paddingEnd="10dp"
-                    app:shape_solidColor="@color/black60"
-                    android:id="@+id/tv_record_query"
-                    />
+                    android:text="记录查询"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    app:shape_radius="8dp"
+                    app:shape_solidColor="@color/black60" />
+
                 <com.hjq.shape.view.ShapeTextView
                     android:layout_width="0dp"
                     android:layout_height="120dp"
+                    android:layout_marginStart="15dp"
                     android:layout_weight="0.2"
                     android:drawableTop="@mipmap/fre_icon"
-                    android:textColor="@color/white"
-                    android:text="工作频率"
-                    android:textSize="20sp"
                     android:gravity="center"
-                    app:shape_radius="8dp"
-                    android:paddingTop="10dp"
                     android:paddingStart="10dp"
+                    android:paddingTop="10dp"
                     android:paddingEnd="10dp"
-                    app:shape_solidColor="@color/black60"
-                    android:layout_marginStart="15dp"
-                    />
+                    android:text="工作频率"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    app:shape_radius="8dp"
+                    app:shape_solidColor="@color/black60" />
+
                 <com.hjq.shape.view.ShapeTextView
                     android:layout_width="0dp"
                     android:layout_height="120dp"
+                    android:layout_marginStart="15dp"
                     android:layout_weight="0.2"
                     android:drawableTop="@mipmap/zone_setting"
-                    android:textColor="@color/white"
-                    android:text="防区设置"
-                    android:textSize="20sp"
                     android:gravity="center"
-                    app:shape_radius="8dp"
-                    android:paddingTop="10dp"
                     android:paddingStart="10dp"
+                    android:paddingTop="10dp"
                     android:paddingEnd="10dp"
-                    app:shape_solidColor="@color/black60"
-                    android:layout_marginStart="15dp"
-                    />
+                    android:text="防区设置"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    app:shape_radius="8dp"
+                    app:shape_solidColor="@color/black60" />
+
                 <com.hjq.shape.view.ShapeTextView
                     android:layout_width="0dp"
                     android:layout_height="120dp"
+                    android:layout_marginStart="15dp"
                     android:layout_weight="0.2"
                     android:drawableTop="@mipmap/probe_type_icon"
-                    android:textColor="@color/white"
-                    android:text="探测类型"
-                    android:textSize="20sp"
                     android:gravity="center"
-                    app:shape_radius="8dp"
-                    android:paddingTop="10dp"
                     android:paddingStart="10dp"
+                    android:paddingTop="10dp"
                     android:paddingEnd="10dp"
-                    app:shape_solidColor="@color/black60"
-                    android:layout_marginStart="15dp"
-                    />
+                    android:text="探测类型"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    app:shape_radius="8dp"
+                    app:shape_solidColor="@color/black60" />
             </LinearLayout>
 
         </LinearLayout>

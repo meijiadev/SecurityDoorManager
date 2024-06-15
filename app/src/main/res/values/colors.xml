@@ -57,6 +57,28 @@
 
     <!-- 灰色 -->
     <color name="gray">#FF808080</color>
+    <color name="gray95">#F2808080</color>
+    <color name="gray90">#E6808080</color>
+    <color name="gray85">#D9808080</color>
+    <color name="gray80">#CC808080</color>
+    <color name="gray75">#B0808080</color>
+    <color name="gray70">#B3808080</color>
+    <color name="gray65">#A6808080</color>
+    <color name="gray60">#99808080</color>
+    <color name="gray55">#8C808080</color>
+    <color name="gray50">#80808080</color>
+    <color name="gray45">#73808080</color>
+    <color name="gray40">#66808080</color>
+    <color name="gray35">#59808080</color>
+    <color name="gray30">#4D808080</color>
+    <color name="gray25">#40808080</color>
+    <color name="gray20">#33808080</color>
+    <color name="gray15">#26808080</color>
+    <color name="gray10">#1A808080</color>
+    <color name="gray5">#0D808080</color>
+
+
+
     <!-- 红色 -->
     <color name="red">#FFFF0000</color>
     <!-- 金色 -->
@@ -67,6 +89,7 @@
     <color name="green">#FF008000</color>
     <!-- 蓝色 -->
     <color name="blue">#FF0000FF</color>
+    <color name="blue1">#86A3BB</color>
     <!-- 紫色 -->
     <color name="purple">#FF800080</color>
     <!-- 粉色 -->
