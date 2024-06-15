@@ -34,7 +34,7 @@
                 android:gravity="center"
                 android:text="六区: "
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/tv_zone6"
@@ -43,7 +43,7 @@
                 android:gravity="center"
                 android:text="960"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -58,7 +58,7 @@
                 android:gravity="center"
                 android:text="五区: "
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/tv_zone5"
@@ -67,7 +67,7 @@
                 android:gravity="center"
                 android:text="960"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -82,7 +82,7 @@
                 android:gravity="center"
                 android:text="四区: "
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/tv_zone4"
@@ -91,7 +91,7 @@
                 android:gravity="center"
                 android:text="960"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
         </LinearLayout>
 
 
@@ -107,7 +107,7 @@
                 android:gravity="center"
                 android:text="三区: "
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/tv_zone3"
@@ -116,7 +116,7 @@
                 android:gravity="center"
                 android:text="960"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
         </LinearLayout>
 
 
@@ -132,7 +132,7 @@
                 android:gravity="center"
                 android:text="一区: "
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/tv_zone2"
@@ -141,7 +141,7 @@
                 android:gravity="center"
                 android:text="960"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
         </LinearLayout>
 
 
@@ -157,7 +157,7 @@
                 android:gravity="center"
                 android:text="一区: "
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/tv_zone1"
@@ -166,7 +166,7 @@
                 android:gravity="center"
                 android:text="960"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
         </LinearLayout>
 
 
@@ -179,7 +179,7 @@
         app:layout_constraintTop_toBottomOf="@id/ll_door"
         android:layout_marginStart="100dp"
         android:text="整体："
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:textColor="@color/white"
         android:layout_marginTop="10dp"
         android:id="@+id/text_overall"
@@ -192,7 +192,7 @@
         app:layout_constraintTop_toBottomOf="@id/ll_door"
         android:layout_marginTop="10dp"
         android:text="260"
-        android:textSize="22sp"
+        android:textSize="18sp"
         android:textColor="@color/white"
         android:id="@+id/tv_zone_overall"
         />
@@ -205,7 +205,7 @@
         android:layout_marginTop="10dp"
         android:text="一区灵敏度："
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toEndOf="@id/ll_door"
         app:layout_constraintTop_toBottomOf="@id/ly_title" />
 
@@ -248,7 +248,7 @@
         android:layout_marginTop="10dp"
         android:text="二区灵敏度："
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toEndOf="@id/ll_door"
         app:layout_constraintTop_toBottomOf="@id/seekbar_zone_1" />
 
@@ -291,7 +291,7 @@
         android:layout_marginTop="10dp"
         android:text="三区灵敏度："
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toEndOf="@id/ll_door"
         app:layout_constraintTop_toBottomOf="@id/seekbar_zone_2" />
 
@@ -334,7 +334,7 @@
         android:layout_marginTop="10dp"
         android:text="四区灵敏度："
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toEndOf="@id/ll_door"
         app:layout_constraintTop_toBottomOf="@id/seekbar_zone_3" />
 
@@ -377,7 +377,7 @@
         android:layout_marginTop="10dp"
         android:text="五区灵敏度："
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toEndOf="@id/ll_door"
         app:layout_constraintTop_toBottomOf="@id/seekbar_zone_4" />
 
@@ -420,7 +420,7 @@
         android:layout_marginTop="10dp"
         android:text="六区灵敏度："
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toEndOf="@id/ll_door"
         app:layout_constraintTop_toBottomOf="@id/seekbar_zone_5" />
 
@@ -463,7 +463,7 @@
         android:layout_marginTop="10dp"
         android:text="整体灵敏度："
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toEndOf="@id/ll_door"
         app:layout_constraintTop_toBottomOf="@id/seekbar_zone_6" />
 
@@ -507,7 +507,7 @@
         android:text="保存"
         android:visibility="visible"
         android:textColor="@color/black"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ly_title"

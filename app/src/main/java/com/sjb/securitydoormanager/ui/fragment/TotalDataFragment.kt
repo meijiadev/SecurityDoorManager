@@ -165,7 +165,7 @@ class TotalDataFragment : BaseMvFragment<FragmentTotalDataBinding, BaseViewModel
             pieChart.invalidate()
             passTotalTv.text = "通过总数：" + totalPass.toInt()
             passTv.text = "净通过数：" + PassInfoManager.hasPass.toInt()
-            phoneAlarmTv.text = "电子产品报警：" + PassInfoManager.phoneAlarms.toInt()
+            phoneAlarmTv.text = "电子产品：" + PassInfoManager.phoneAlarms.toInt()
             otherAlarmTv.text = "其他报警：" + PassInfoManager.otherAlarms.toInt()
         }
     }

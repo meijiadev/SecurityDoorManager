@@ -141,7 +141,7 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
             // 打开网络adb连接
             myManager.setNetworkAdb(true)
             // 设置守护进程 0:30s  1：60s   2:180s
-            myManager.daemon("com.sjb.securitydoormanager", 0)
+            myManager.daemon("com.sjb.securitydoormanager", 2)
         }
     }
 
