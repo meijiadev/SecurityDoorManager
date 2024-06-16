@@ -53,8 +53,8 @@ import java.util.*
 
 class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), SurfaceHolder.Callback {
 
-    private val totalDataFragment: TotalDataFragment by lazy { TotalDataFragment.newInstance() }
-    private val recordListFragment: RecordListFragment by lazy { RecordListFragment.newInstance() }
+//    private val totalDataFragment: TotalDataFragment by lazy { TotalDataFragment.newInstance() }
+//    private val recordListFragment: RecordListFragment by lazy { RecordListFragment.newInstance() }
 
     private var pieDataSet: PieDataSet? = null
     private var updateUIAction = UnPeekLiveData<Int>()
@@ -153,76 +153,67 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
     }
 
     override fun initView() {
-//        binding.run {
-//            // 设置是否显示扇形图中的文字
-//            pieChart.setDrawEntryLabels(false)
-//            // 是否显示圆心
-//            pieChart.isDrawHoleEnabled = true
-//            pieChart.holeRadius = 50f
-//            val desc = Description()
-//            desc.isEnabled = false
-//            pieChart.description = desc
-//            // 设置圆心的颜色
-//            pieChart.setHoleColor(Color.TRANSPARENT)
-//            val legend = pieChart.legend
-//            legend.isWordWrapEnabled = true
-//            //设置图例的实际对齐方式
-//            legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
-//            //设置图例水平对齐方式
-//            legend.horizontalAlignment = Legend.LegendHorizontalAlignment.LEFT
-//            //设置图例方向
-//            legend.orientation = Legend.LegendOrientation.VERTICAL
-//            legend.textColor = resources.getColor(R.color.text_c6cbff)
-//            //设置图例是否在图表内绘制
-//            legend.setDrawInside(false)
-//        }
-        //setChartData()
+        binding.run {
+            // 设置是否显示扇形图中的文字
+            pieChart.setDrawEntryLabels(false)
+            // 是否显示圆心
+            pieChart.isDrawHoleEnabled = true
+            pieChart.holeRadius = 50f
+            val desc = Description()
+            desc.isEnabled = false
+            pieChart.description = desc
+            // 设置圆心的颜色
+            pieChart.setHoleColor(Color.TRANSPARENT)
+            val legend = pieChart.legend
+            legend.isWordWrapEnabled = true
+            //设置图例的实际对齐方式
+            legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+            //设置图例水平对齐方式
+            legend.horizontalAlignment = Legend.LegendHorizontalAlignment.LEFT
+            //设置图例方向
+            legend.orientation = Legend.LegendOrientation.VERTICAL
+            legend.textColor = resources.getColor(R.color.text_c6cbff)
+            //设置图例是否在图表内绘制
+            legend.setDrawInside(false)
+        }
+        setChartData()
         binding.scanView.setVertical(true)
         binding.scanView.setStartFromBottom(false)
         binding.scanView.setAnimDuration(2000)
         binding.surfaceViewRect.holder.addCallback(this)
         binding.surfaceViewRect.setZOrderMediaOverlay(true)
         binding.surfaceViewRect.holder.setFormat(PixelFormat.TRANSLUCENT)
-        switchFragment(totalDataFragment)
-        totalDataFragment.setMcu(DataMcuProcess.instance)
     }
 
-    /**
-     * 当前的fragment
-     */
-    private var mFragment = Fragment()
 
     /**
-     * 切换fragment视图
+     * 设置扇形图的数据
      */
-    private fun switchFragment(target: Fragment) {
-        if (target != mFragment) {
-            val transaction = supportFragmentManager.beginTransaction()
-            if (target is TotalDataFragment) {
-                transaction.setCustomAnimations(
-                    R.anim.action_left_enter,
-                    R.anim.action_left_exit
-                )
-            } else {
-                transaction.setCustomAnimations(
-                    R.anim.action_rigth_enter,
-                    R.anim.action_rigth_exit
-                )
-            }
-            // 先判断fragment是否已经被添加到管理器
-            if (!target.isAdded) {
-                transaction.hide(mFragment).add(R.id.layout_container, target)
-                    .commitAllowingStateLoss()
-            } else {
-                // 添加的fragment 直接显示
-                transaction.hide(mFragment).show(target).commitAllowingStateLoss()
-            }
-            mFragment = target
+    @SuppressLint("SetTextI18n")
+    private fun setChartData() {
+        val entries = mutableListOf<PieEntry>()
+        entries.add(PieEntry(PassInfoManager.hasPass, "净通过"))
+        entries.add(PieEntry(PassInfoManager.phoneAlarms, "电子产品报警"))
+        entries.add(PieEntry(PassInfoManager.otherAlarms, "其他报警"))
+        pieDataSet = PieDataSet(entries, "")
+        pieDataSet?.valueTextSize = 0f
+        pieDataSet?.valueTextColor = Color.WHITE
+        val colors = mutableListOf<Int>()
+        colors.add(resources.getColor(R.color.green))
+        colors.add(resources.getColor(R.color.red))
+        colors.add(resources.getColor(R.color.yellow))
+        pieDataSet?.sliceSpace = 1f
+        pieDataSet?.colors = colors
+        val pieData = PieData(pieDataSet)
+        binding.run {
+            pieChart.data = pieData
+            pieChart.invalidate()
+            passTotalTv.text = "通过总数：" + PassInfoManager.totalPass.toInt()
+            passTv.text = "净通过数：" + PassInfoManager.hasPass.toInt()
+            phoneAlarmTv.text = "电子产品：" + PassInfoManager.phoneAlarms.toInt()
+            otherAlarmTv.text = "其他报警：" + PassInfoManager.otherAlarms.toInt()
         }
-
     }
-
-
     override fun initData() {
         updateTime()
         TimeThread().start()
@@ -249,6 +240,8 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
             binding.scanView.startScanAnim()
         }
 
+        Logger.i("初始化相关参数")
+
     }
 
     private var idCardDialog: IDCardDialog? = null
@@ -268,12 +261,6 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
 
     override fun initListener() {
 
-        DataMcuProcess.instance.alarmGoodsEvent.observe(this) {
-            if (!binding.tvType.text.toString().contains(it)) {
-                binding.tvType.text = it
-            }
-
-        }
         DataMcuProcess.instance.locationEvent.observe(this) {
             binding.tvLocation.text = it
         }
@@ -284,8 +271,57 @@ class HomeActivity : BaseMvActivity<ActivityHomeBinding, HomeViewModel>(), Surfa
             }
         }
         DataMcuProcess.instance.alarmGoodsEvent.observe(this) {
+            if (!binding.tvType.text.toString().contains(it)) {
+                binding.tvType.text = it
+            }
             if (it == "电子产品") {
                 speak()
+                PassInfoManager.phoneAlarms += 1
+                PassInfoManager.otherAlarms = PassInfoManager.totalAlarms - PassInfoManager.phoneAlarms
+                setChartData()
+            }
+        }
+
+        binding.passTv.setOnClickListener {
+            PassInfoManager.totalPass += 1
+            PassInfoManager.hasPass += 1
+            setChartData()
+//            binding.scanView.startScanAnim()
+//            mqttSerModel.uploadRecord(0, "IN", mIDCardInfo, captureBitmap)
+
+        }
+
+        binding.phoneAlarmTv.setOnClickListener {
+            PassInfoManager.totalPass += 1
+            PassInfoManager.phoneAlarms += 1
+            setChartData()
+//            mqttSerModel.uploadRecord(1, "IN", mIDCardInfo, captureBitmap)
+//            speak()
+        }
+
+
+
+
+        binding.otherAlarmTv.setOnClickListener {
+            PassInfoManager.totalPass += 1
+            PassInfoManager.otherAlarms += 1
+            setChartData()
+//            mqttSerModel.uploadRecord(1, "OUT", mIDCardInfo, captureBitmap)
+            //faceModel.executeIDCardVer()
+        }
+
+
+        DataMcuProcess.instance.passNumberEvent.observe(this) {
+            it?.toFloat()?.let {
+                PassInfoManager.totalPass = it
+                setChartData()
+            }
+        }
+        DataMcuProcess.instance.alarmNumberEvent.observe(this) {
+            it?.toFloat()?.let {
+                PassInfoManager.totalAlarms = it
+                PassInfoManager.hasPass = PassInfoManager.totalPass - PassInfoManager.totalAlarms
+                setChartData()
             }
         }
     }

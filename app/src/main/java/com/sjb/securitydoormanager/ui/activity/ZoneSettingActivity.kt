@@ -8,6 +8,9 @@ import com.sjb.securitydoormanager.databinding.ActivityZoneSettingBinding
 import com.sjb.securitydoormanager.serialport.DataMcuProcess
 import com.sjb.securitydoormanager.serialport.DataProtocol
 import com.sjb.securitydoormanager.serialport.SerialPortManager
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 /**
@@ -46,7 +49,7 @@ class ZoneSettingActivity : BaseMvActivity<ActivityZoneSettingBinding, BaseViewM
                     0x7f
                 )
                 SerialPortManager.instance.sendMsg(data)
-
+                getDoorParam()
             }
             llDoor12Zone.setOnClickListener {
                 initZoneDefault()
@@ -61,6 +64,7 @@ class ZoneSettingActivity : BaseMvActivity<ActivityZoneSettingBinding, BaseViewM
                     0x7f
                 )
                 SerialPortManager.instance.sendMsg(data)
+                getDoorParam()
             }
 
             llDoor18Zone.setOnClickListener {
@@ -76,6 +80,7 @@ class ZoneSettingActivity : BaseMvActivity<ActivityZoneSettingBinding, BaseViewM
                     0x7f
                 )
                 SerialPortManager.instance.sendMsg(data)
+                getDoorParam()
             }
 
 
@@ -123,4 +128,14 @@ class ZoneSettingActivity : BaseMvActivity<ActivityZoneSettingBinding, BaseViewM
             .intoBackground()
     }
 
+    /**
+     * 获取安检门参数
+     */
+    private fun getDoorParam(){
+        MainScope().launch {
+            delay(100)
+            //要求安检门上传参数
+            SerialPortManager.instance.sendMsg(DataProtocol.data_0x02)
+        }
+    }
 }

@@ -44,8 +44,6 @@ class SerialPortManager private constructor() {
     private var readThread: ReadThread? = null
 
 
-
-
     companion object {
         val instance: SerialPortManager by lazy(mode = LazyThreadSafetyMode.NONE) {
             SerialPortManager()
@@ -91,9 +89,9 @@ class SerialPortManager private constructor() {
             readThread = ReadThread()
         }
         readThread?.start()
-       // WriteThread().start()
+        Logger.i("start readThread serialport")
+        // WriteThread().start()
     }
-
 
 
     /**
