@@ -45,7 +45,7 @@
         android:gravity="center"
         android:text="通过总数：100"
         android:textColor="@color/text_c6cbff"
-        android:textSize="13sp"
+        android:textSize="12sp"
         android:singleLine="true"
         android:textStyle="bold" />
 
@@ -66,7 +66,7 @@
         android:gravity="center"
         android:text="净通过数：87"
         android:textColor="@color/text_c6cbff"
-        android:textSize="13sp"
+        android:textSize="12sp"
         android:singleLine="true"
         android:textStyle="bold" />
 
@@ -106,7 +106,7 @@
         android:gravity="center"
         android:text="其他报警：87"
         android:textColor="@color/text_c6cbff"
-        android:textSize="13sp"
+        android:textSize="12sp"
         android:singleLine="true"
         android:textStyle="bold" />
 

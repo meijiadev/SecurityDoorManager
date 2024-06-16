@@ -81,6 +81,12 @@
 
     <!-- 红色 -->
     <color name="red">#FFFF0000</color>
+    <color name="red50">#8CFF0000</color>
+    <color name="red40">#66FF0000</color>
+    <color name="red30">#4DFF0000</color>
+    <color name="red25">#40FF0000</color>
+    <color name="red20">#33FF0000</color>
+    <color name="red15">#26FF0000</color>
     <!-- 金色 -->
     <color name="gold">#FFFFD700</color>
     <!-- 黄色 -->
