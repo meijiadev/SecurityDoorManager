@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_home"
+    app:startDestination="@id/homeFragment"
+    >
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.sjb.securitydoormanager.ui.fragment.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_messageFragment"
+            app:destination="@id/messageFragment"
+            app:enterAnim="@anim/action_right_enter"
+            app:exitAnim="@anim/action_right_exit"
+            app:popEnterAnim="@anim/action_left_enter"
+            app:popExitAnim="@anim/action_left_exit" />
+    </fragment>
+
+</navigation>

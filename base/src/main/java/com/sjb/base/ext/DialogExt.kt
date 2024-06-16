@@ -2,6 +2,7 @@ package com.sjb.base.ext
 
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.impl.LoadingPopupView
 
@@ -18,4 +19,12 @@ fun AppCompatActivity.showLoading(msg: String = "加载中...") {
 
 fun dismissLoading(){
     loadingPopupView?.dismiss()
+}
+
+fun Fragment.showLoading(msg: String = "加载中...") {
+    loadingPopupView= XPopup.Builder(requireContext())
+        .isViewMode(true)
+        .dismissOnTouchOutside(false)
+        .asLoading(msg)
+        .show() as LoadingPopupView?
 }

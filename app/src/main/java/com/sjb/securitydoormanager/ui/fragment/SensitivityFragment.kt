@@ -1,13 +1,14 @@
-package com.sjb.securitydoormanager.ui.activity
+package com.sjb.securitydoormanager.ui.fragment
 
 import android.widget.SeekBar
+import androidx.navigation.fragment.findNavController
 import com.orhanobut.logger.Logger
-import com.sjb.base.base.BaseMvActivity
+import com.sjb.base.base.BaseMvFragment
 import com.sjb.base.base.BaseViewModel
 import com.sjb.base.ext.dismissLoading
 import com.sjb.base.ext.showLoading
 import com.sjb.securitydoormanager.bean.SensitivityData
-import com.sjb.securitydoormanager.databinding.ActivitySensitivityBinding
+import com.sjb.securitydoormanager.databinding.FragmentSensitivityBinding
 import com.sjb.securitydoormanager.serialport.DataMcuProcess
 import com.sjb.securitydoormanager.serialport.DataProtocol
 import com.sjb.securitydoormanager.serialport.SerialPortManager
@@ -15,8 +16,14 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewModel>(),
+/**
+ * Create by MJ on 2024/6/16.
+ * Describe :
+ */
+
+class SensitivityFragment : BaseMvFragment<FragmentSensitivityBinding, BaseViewModel>(),
     SeekBar.OnSeekBarChangeListener {
+
 
     private var zone1Progress = 0
     private var zone2Progress = 0
@@ -31,11 +38,6 @@ class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewM
 
     // 是否点击了保存按钮
     private var isTouchSaveBt = false
-
-
-    override fun getViewBinding(): ActivitySensitivityBinding {
-        return ActivitySensitivityBinding.inflate(layoutInflater)
-    }
 
     override fun initParam() {
 
@@ -134,20 +136,20 @@ class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewM
             lyTitle.ivBack.setOnClickListener {
                 isTouchSaveBt = false
                 saveSensitivityToDoor()
-                finish()
+                findNavController().popBackStack()
             }
         }
     }
 
     override fun initView() {
         binding.run {
-            seekbarZone1.setOnSeekBarChangeListener(this@SensitivityActivity)
-            seekbarZone2.setOnSeekBarChangeListener(this@SensitivityActivity)
-            seekbarZone3.setOnSeekBarChangeListener(this@SensitivityActivity)
-            seekbarZone4.setOnSeekBarChangeListener(this@SensitivityActivity)
-            seekbarZone5.setOnSeekBarChangeListener(this@SensitivityActivity)
-            seekbarZone6.setOnSeekBarChangeListener(this@SensitivityActivity)
-            seekbarZoneOverall.setOnSeekBarChangeListener(this@SensitivityActivity)
+            seekbarZone1.setOnSeekBarChangeListener(this@SensitivityFragment)
+            seekbarZone2.setOnSeekBarChangeListener(this@SensitivityFragment)
+            seekbarZone3.setOnSeekBarChangeListener(this@SensitivityFragment)
+            seekbarZone4.setOnSeekBarChangeListener(this@SensitivityFragment)
+            seekbarZone5.setOnSeekBarChangeListener(this@SensitivityFragment)
+            seekbarZone6.setOnSeekBarChangeListener(this@SensitivityFragment)
+            seekbarZoneOverall.setOnSeekBarChangeListener(this@SensitivityFragment)
         }
     }
 
@@ -355,12 +357,14 @@ class SensitivityActivity : BaseMvActivity<ActivitySensitivityBinding, BaseViewM
         }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        super.onBackPressed()
+    override fun onStop() {
+        super.onStop()
         isTouchSaveBt = false
         saveSensitivityToDoor()
     }
 
-
+//    fun onBackPressed() {
+//        isTouchSaveBt = false
+//        saveSensitivityToDoor()
+//    }
 }
