@@ -1,10 +1,11 @@
-package com.sjb.securitydoormanager.ui.activity
+package com.sjb.securitydoormanager.ui.fragment
 
+import androidx.navigation.fragment.findNavController
 import com.orhanobut.logger.Logger
-import com.sjb.base.base.BaseMvActivity
+import com.sjb.base.base.BaseMvFragment
 import com.sjb.base.base.BaseViewModel
 import com.sjb.securitydoormanager.R
-import com.sjb.securitydoormanager.databinding.ActivityZoneSettingBinding
+import com.sjb.securitydoormanager.databinding.FragmentZoneSettingBinding
 import com.sjb.securitydoormanager.serialport.DataMcuProcess
 import com.sjb.securitydoormanager.serialport.DataProtocol
 import com.sjb.securitydoormanager.serialport.SerialPortManager
@@ -12,16 +13,12 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 /**
- * Create by MJ on 2024/6/15.
+ * Create by MJ on 2024/6/17.
  * Describe :
  */
-class ZoneSettingActivity : BaseMvActivity<ActivityZoneSettingBinding, BaseViewModel>() {
-    override fun getViewBinding(): ActivityZoneSettingBinding {
-        return ActivityZoneSettingBinding.inflate(layoutInflater)
-    }
 
+class ZoneSettingFragment : BaseMvFragment<FragmentZoneSettingBinding, BaseViewModel>() {
     override fun initParam() {
         binding.lyTitle.tvTitle.text = "防区设置"
     }
@@ -33,12 +30,12 @@ class ZoneSettingActivity : BaseMvActivity<ActivityZoneSettingBinding, BaseViewM
     override fun initViewObservable() {
         binding.run {
             lyTitle.ivBack.setOnClickListener {
-                finish()
+                findNavController().popBackStack()
             }
 
             llDoor6Zone.setOnClickListener {
                 initZoneDefault()
-                llDoor6Zone.shapeDrawableBuilder.setSolidColor(getColor(R.color.common_button_pressed_color))
+                llDoor6Zone.shapeDrawableBuilder.setSolidColor(requireActivity().getColor(R.color.common_button_pressed_color))
                     .intoBackground()
                 val byte3 = (0b01101).toByte()
                 val data = byteArrayOf(
@@ -53,7 +50,7 @@ class ZoneSettingActivity : BaseMvActivity<ActivityZoneSettingBinding, BaseViewM
             }
             llDoor12Zone.setOnClickListener {
                 initZoneDefault()
-                llDoor12Zone.shapeDrawableBuilder.setSolidColor(getColor(R.color.common_button_pressed_color))
+                llDoor12Zone.shapeDrawableBuilder.setSolidColor(requireActivity().getColor(R.color.common_button_pressed_color))
                     .intoBackground()
                 val byte3 = (0b01110).toByte()
                 val data = byteArrayOf(
@@ -69,7 +66,7 @@ class ZoneSettingActivity : BaseMvActivity<ActivityZoneSettingBinding, BaseViewM
 
             llDoor18Zone.setOnClickListener {
                 initZoneDefault()
-                llDoor18Zone.shapeDrawableBuilder.setSolidColor(getColor(R.color.common_button_pressed_color))
+                llDoor18Zone.shapeDrawableBuilder.setSolidColor(requireActivity().getColor(R.color.common_button_pressed_color))
                     .intoBackground()
                 val byte3 = (0b01111).toByte()
                 val data = byteArrayOf(
@@ -88,7 +85,6 @@ class ZoneSettingActivity : BaseMvActivity<ActivityZoneSettingBinding, BaseViewM
     }
 
     override fun initView() {
-
     }
 
     override fun initListener() {
@@ -98,21 +94,33 @@ class ZoneSettingActivity : BaseMvActivity<ActivityZoneSettingBinding, BaseViewM
                 0b01101 -> {
                     Logger.i("当前设置的是6区门")
                     initZoneDefault()
-                    binding.llDoor6Zone.shapeDrawableBuilder.setSolidColor(getColor(R.color.common_button_pressed_color))
+                    binding.llDoor6Zone.shapeDrawableBuilder.setSolidColor(
+                        requireActivity().getColor(
+                            R.color.common_button_pressed_color
+                        )
+                    )
                         .intoBackground()
                 }
                 // 12 区
                 0b01110 -> {
                     Logger.i("当前设置的是12区门")
                     initZoneDefault()
-                    binding.llDoor12Zone.shapeDrawableBuilder.setSolidColor(getColor(R.color.common_button_pressed_color))
+                    binding.llDoor12Zone.shapeDrawableBuilder.setSolidColor(
+                        requireActivity().getColor(
+                            R.color.common_button_pressed_color
+                        )
+                    )
                         .intoBackground()
                 }
                 // 18 区
                 0b01111 -> {
                     Logger.i("当前设置的是18区门")
                     initZoneDefault()
-                    binding.llDoor18Zone.shapeDrawableBuilder.setSolidColor(getColor(R.color.common_button_pressed_color))
+                    binding.llDoor18Zone.shapeDrawableBuilder.setSolidColor(
+                        requireActivity().getColor(
+                            R.color.common_button_pressed_color
+                        )
+                    )
                         .intoBackground()
                 }
             }
@@ -120,18 +128,18 @@ class ZoneSettingActivity : BaseMvActivity<ActivityZoneSettingBinding, BaseViewM
     }
 
     private fun initZoneDefault() {
-        binding.llDoor6Zone.shapeDrawableBuilder.setSolidColor(getColor(R.color.gray15))
+        binding.llDoor6Zone.shapeDrawableBuilder.setSolidColor(requireActivity().getColor(R.color.gray15))
             .intoBackground()
-        binding.llDoor12Zone.shapeDrawableBuilder.setSolidColor(getColor(R.color.gray15))
+        binding.llDoor12Zone.shapeDrawableBuilder.setSolidColor(requireActivity().getColor(R.color.gray15))
             .intoBackground()
-        binding.llDoor18Zone.shapeDrawableBuilder.setSolidColor(getColor(R.color.gray15))
+        binding.llDoor18Zone.shapeDrawableBuilder.setSolidColor(requireActivity().getColor(R.color.gray15))
             .intoBackground()
     }
 
     /**
      * 获取安检门参数
      */
-    private fun getDoorParam(){
+    private fun getDoorParam() {
         MainScope().launch {
             delay(100)
             //要求安检门上传参数

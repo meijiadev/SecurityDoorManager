@@ -21,19 +21,24 @@ class SettingDialog(context: Context) : CenterPopupView(context) {
         super.init()
         tvSensitivity.setOnClickListener {
             toSensitivityOnclick?.invoke()
+            dismiss()
         }
         tvFre.setOnClickListener {
             toFrequencyOnclick?.invoke()
+            dismiss()
         }
         tvZone.setOnClickListener {
             toZoneSelectOnclick?.invoke()
+            dismiss()
         }
         tvProbeType.setOnClickListener {
             toProbeTypeOnclick?.invoke()
+            dismiss()
         }
 
         tvRecordQuery.setOnClickListener {
             toRecordQueryOnclick?.invoke()
+            dismiss()
         }
 
     }
@@ -52,27 +57,22 @@ class SettingDialog(context: Context) : CenterPopupView(context) {
 
     fun sensitivityOnClick(listener: () -> Unit): SettingDialog = apply {
         toSensitivityOnclick = listener
-        dismiss()
     }
 
     fun frequencyOnClick(listener: () -> Unit): SettingDialog = apply {
         toFrequencyOnclick = listener
-        dismiss()
     }
 
     fun zoneSelectOnClick(listener: () -> Unit): SettingDialog = apply {
         toZoneSelectOnclick = listener
-        dismiss()
     }
 
     fun probeTypeOnclick(listener: () -> Unit): SettingDialog = apply {
         toProbeTypeOnclick = listener
-        dismiss()
     }
 
     fun recordQueryOnclick(listener: () -> Unit): SettingDialog = apply {
         toRecordQueryOnclick = listener
-        dismiss()
     }
 
 

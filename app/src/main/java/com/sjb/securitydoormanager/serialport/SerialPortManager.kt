@@ -98,6 +98,7 @@ class SerialPortManager private constructor() {
      * 给串口发送消息
      */
     fun sendMsg(msg: ByteArray) {
+        Logger.i("写入数据：${HexUtil.formatHexString(msg, true)}")
         kotlin.runCatching {
             mOutputStream?.write(msg)
         }.onFailure {

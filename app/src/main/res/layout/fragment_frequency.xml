@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/home_bg">
+
+    <include
+        android:id="@+id/ly_title"
+        layout="@layout/layout_title" />
+
+
+    <LinearLayout
+        android:id="@+id/ll_fre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ly_title">
+
+        <com.hjq.shape.layout.ShapeLinearLayout
+            android:id="@+id/ll_frequency_auto"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:shape_radius="10dp"
+            app:shape_solidColor="@color/gray15">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:src="@mipmap/auto_fre_icon" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:gravity="center"
+                android:text="自动设频"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        </com.hjq.shape.layout.ShapeLinearLayout>
+
+        <com.hjq.shape.layout.ShapeLinearLayout
+            android:id="@+id/ll_frequency_hand"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="80dp"
+            android:orientation="vertical"
+            app:shape_radius="10dp"
+            app:shape_solidColor="@color/common_button_pressed_color">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:src="@mipmap/hand_fre_icon" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:gravity="center"
+                android:text="手动调频"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        </com.hjq.shape.layout.ShapeLinearLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_seek"
+        android:layout_width="850dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ll_fre">
+
+        <LinearLayout
+            android:id="@+id/ll_seek_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/iv_fre_reduce"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@mipmap/reduce_icon"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+            <SeekBar
+                android:id="@+id/seek_fre"
+                android:layout_width="650dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:max="99"
+                android:progress="0"
+                android:progressDrawable="@drawable/horizontal_style"
+                android:thumb="@drawable/thumb_normal" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/iv_fre_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:drawableEnd="@mipmap/add_icon"
+                android:gravity="center"
+                android:text="99"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_below="@id/ll_seek_bar"
+            android:gravity="center"
+            android:layout_toLeftOf="@id/tv_progress"
+            android:text="当前频率："
+            android:textColor="@color/white" />
+
+        <com.hjq.shape.view.ShapeTextView
+            android:id="@+id/tv_progress"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
+            android:layout_below="@id/ll_seek_bar"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="0"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            app:shape_radius="8dp"
+            app:shape_strokeColor="@color/white"
+            app:shape_strokeWidth="1dp" />
+
+        <com.hjq.shape.view.ShapeTextView
+            android:id="@+id/bt_save"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/ll_seek_bar"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="20dp"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:text="保存"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:shape_radius="18dp"
+            app:shape_solidColor="@color/gold" />
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

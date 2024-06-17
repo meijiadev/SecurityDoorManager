@@ -3,20 +3,50 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_home"
-    app:startDestination="@id/homeFragment"
-    >
+    app:startDestination="@id/homeFragment">
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.sjb.securitydoormanager.ui.fragment.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home">
         <action
-            android:id="@+id/action_homeFragment_to_messageFragment"
-            app:destination="@id/messageFragment"
+            android:id="@+id/action_homeFragment_to_sensitivityFragment"
+            app:destination="@id/sensitivityFragment"
+            app:enterAnim="@anim/action_right_enter"
+            app:exitAnim="@anim/action_right_exit"
+            app:popEnterAnim="@anim/action_left_enter"
+            app:popExitAnim="@anim/action_left_exit" />
+        <action
+            android:id="@+id/action_homeFragment_to_zoneSettingFragment"
+            app:destination="@id/zoneSettingFragment"
+            app:enterAnim="@anim/action_right_enter"
+            app:exitAnim="@anim/action_right_exit"
+            app:popEnterAnim="@anim/action_left_enter"
+            app:popExitAnim="@anim/action_left_exit" />
+        <action
+            android:id="@+id/action_homeFragment_to_frequencyFragment"
+            app:destination="@id/frequencyFragment"
             app:enterAnim="@anim/action_right_enter"
             app:exitAnim="@anim/action_right_exit"
             app:popEnterAnim="@anim/action_left_enter"
             app:popExitAnim="@anim/action_left_exit" />
     </fragment>
+
+    <fragment
+        android:id="@+id/sensitivityFragment"
+        android:name="com.sjb.securitydoormanager.ui.fragment.SensitivityFragment"
+        android:label="SensitivityFragment"
+        tools:layout="@layout/fragment_sensitivity" />
+
+    <fragment
+        android:id="@+id/zoneSettingFragment"
+        android:name="com.sjb.securitydoormanager.ui.fragment.ZoneSettingFragment"
+        android:label="ZoneSettingFragment"
+        tools:layout="@layout/fragment_zone_setting" />
+    <fragment
+        android:id="@+id/frequencyFragment"
+        android:name="com.sjb.securitydoormanager.ui.fragment.FrequencyFragment"
+        android:label="FrequencyFragment"
+        tools:layout="@layout/fragment_frequency" />
 
 </navigation>

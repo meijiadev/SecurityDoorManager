@@ -2,7 +2,7 @@
 <com.hjq.shape.layout.ShapeConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="600dp"
-    android:layout_height="400dp"
+    android:layout_height="wrap_content"
     app:layout_constraintHeight_percent="0.5"
     app:layout_constraintWidth_percent="0.8"
     app:shape_radius="18dp"
@@ -26,7 +26,7 @@
                 <com.hjq.shape.view.ShapeTextView
                     android:id="@+id/tv_sensitivity"
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="100dp"
                     android:layout_weight="0.2"
                     android:drawableTop="@mipmap/spl_icon"
                     android:gravity="center"
@@ -42,7 +42,7 @@
                 <com.hjq.shape.view.ShapeTextView
                     android:id="@+id/tv_fre"
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="100dp"
                     android:layout_marginStart="15dp"
                     android:layout_weight="0.2"
                     android:drawableTop="@mipmap/fre_icon"
@@ -59,7 +59,7 @@
                 <com.hjq.shape.view.ShapeTextView
                     android:id="@+id/tv_zone"
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="100dp"
                     android:layout_marginStart="15dp"
                     android:layout_weight="0.2"
                     android:drawableTop="@mipmap/zone_setting"
@@ -76,7 +76,7 @@
                 <com.hjq.shape.view.ShapeTextView
                     android:id="@+id/tv_probe_type"
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="100dp"
                     android:layout_marginStart="15dp"
                     android:layout_weight="0.2"
                     android:drawableTop="@mipmap/probe_type_icon"
@@ -96,12 +96,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
                 android:orientation="horizontal">
 
                 <com.hjq.shape.view.ShapeTextView
                     android:id="@+id/tv_record_query"
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="100dp"
                     android:layout_weight="0.2"
                     android:drawableTop="@mipmap/record_query"
                     android:gravity="center"
@@ -114,53 +115,6 @@
                     app:shape_radius="8dp"
                     app:shape_solidColor="@color/black60" />
 
-                <com.hjq.shape.view.ShapeTextView
-                    android:layout_width="0dp"
-                    android:layout_height="120dp"
-                    android:layout_marginStart="15dp"
-                    android:layout_weight="0.2"
-                    android:drawableTop="@mipmap/fre_icon"
-                    android:gravity="center"
-                    android:paddingStart="10dp"
-                    android:paddingTop="10dp"
-                    android:paddingEnd="10dp"
-                    android:text="工作频率"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    app:shape_radius="8dp"
-                    app:shape_solidColor="@color/black60" />
-
-                <com.hjq.shape.view.ShapeTextView
-                    android:layout_width="0dp"
-                    android:layout_height="120dp"
-                    android:layout_marginStart="15dp"
-                    android:layout_weight="0.2"
-                    android:drawableTop="@mipmap/zone_setting"
-                    android:gravity="center"
-                    android:paddingStart="10dp"
-                    android:paddingTop="10dp"
-                    android:paddingEnd="10dp"
-                    android:text="防区设置"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    app:shape_radius="8dp"
-                    app:shape_solidColor="@color/black60" />
-
-                <com.hjq.shape.view.ShapeTextView
-                    android:layout_width="0dp"
-                    android:layout_height="120dp"
-                    android:layout_marginStart="15dp"
-                    android:layout_weight="0.2"
-                    android:drawableTop="@mipmap/probe_type_icon"
-                    android:gravity="center"
-                    android:paddingStart="10dp"
-                    android:paddingTop="10dp"
-                    android:paddingEnd="10dp"
-                    android:text="探测类型"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    app:shape_radius="8dp"
-                    app:shape_solidColor="@color/black60" />
             </LinearLayout>
 
         </LinearLayout>

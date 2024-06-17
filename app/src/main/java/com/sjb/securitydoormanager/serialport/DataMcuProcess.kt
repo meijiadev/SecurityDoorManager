@@ -16,13 +16,18 @@ class DataMcuProcess private constructor() : DataProcBase() {
     var alarmGoodsEvent = UnPeekLiveData<String>()      // 报警物品
     var passNumberEvent = UnPeekLiveData<Int>()         // 通过的人数
     var alarmNumberEvent = UnPeekLiveData<Int>()        // 通过的报警次数
-    var locationEvent = UnPeekLiveData<String>()        // 报警的位置
+    var locationEvent = UnPeekLiveData<MutableList<Int>?>()        // 报警的位置
 
     var doorParamEvent = MutableLiveData<ByteArray>()    // 安检门参数
 
-    var sensitivityEvent = MutableLiveData<SensitivityData>()
+    var sensitivityEvent = MutableLiveData<SensitivityData>()      // 灵敏度
 
-    var zoneSettingEvent = MutableLiveData<Int>()
+    var zoneSettingEvent = MutableLiveData<Int>()                //区位
+
+    var frequencyAutoEvent = MutableLiveData<Boolean>() //是否是自动设频
+
+    var frequencyEvent = MutableLiveData<Int>()          // 工作频率 （手动设置的）
+
 
     var enterType = 0                  // 进入的方向 0： 从前往后进   1：从后往前
 
@@ -124,7 +129,7 @@ class DataMcuProcess private constructor() : DataProcBase() {
      */
     private fun phoneDoorParse(data: ByteArray) {
         var zoneNumber = 6           // 默认6区
-        locationEvent.postValue("")
+        locationEvent.postValue(null)
         // 从前往后的数量
         val passForward =
             data[3].and(ff).toInt().shl(14) +
@@ -188,26 +193,26 @@ class DataMcuProcess private constructor() : DataProcBase() {
         for (i in 0..5) {
             if (zoneNumber == 6) {
                 if (alarm6Zone[i * 2] && alarm6Zone[i * 2 + 1]) {
-                    alarmZoneList.add(i + 1)
+                    alarmZoneList.add(i)
                     Logger.i("报警的区位是：${i + 1}")
-                    val location = resolutionZone(i)
-                    Logger.i("报警的位置是：$location")
-                    alarmLocation += location
+                    // val location = resolutionZone(i)
+                    // Logger.i("报警的位置是：$location")
+                    //  alarmLocation += location
                 }
             }
             if (zoneNumber == 12 || zoneNumber == 18) {
                 if (alarm6Zone[i * 2] || alarm6Zone[i * 2 + 1]) {
-                    alarmZoneList.add(i + 1)
+                    alarmZoneList.add(i)
                     Logger.i("报警的区位是：${i + 1}")
-                    val location = resolutionZone(i)
-                    Logger.i("报警的位置是：$location")
-                    alarmLocation += location
+                    //  val location = resolutionZone(i)
+                    //  Logger.i("报警的位置是：$location")
+                    //  alarmLocation += location
                 }
             }
             alarmZoneStr += if (alarm6Zone[i * 2]) "1" else "0"
             alarmZoneStr += if (alarm6Zone[i * 2 + 1]) "1" else "0"
         }
-        locationEvent.postValue(alarmLocation)
+        locationEvent.postValue(alarmZoneList)
         Logger.i("报警区位分布：$alarmZoneStr")
         //80 3e 01 00 00 7a 00 00 7b 00 00 67 00 00 68 0d 0a 03 14 00 24 0b 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 40 01 00 00 00 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 00 7f
         //80 3e 01 00 00 7a 00 00 7b 00 00 67 00 00 68 0d 0a 03 14 00 24 0b 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 40 01 00 00 00 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 00 7f
@@ -278,6 +283,7 @@ class DataMcuProcess private constructor() : DataProcBase() {
 
         val frequency = data[22].toInt()
         Logger.i("当前频点：$frequency")
+        frequencyEvent.postValue(frequency)
         //6--2位：语言0:中文  1:英文   2:土耳其语   3:俄语   4:波兰语
         //第0位：语言锁      0:语言可选          1:只有英文
         val languageLock = data[23].toInt() and 0b0000001
@@ -294,6 +300,7 @@ class DataMcuProcess private constructor() : DataProcBase() {
         val alarmMode = data[24].toInt().shr(4) and 0b00000001
         val powerOnAuto = data[24].toInt().shr(5) and 0b00000001
         val freOnAuto = data[24].toInt().shr(6) and 0b00000001
+        frequencyAutoEvent.postValue(freOnAuto == 0)
         Logger.i(
             "原始数据：${data[24].toInt().toString(2)} \n" +
                     "安检门类型：$doorType \n" +

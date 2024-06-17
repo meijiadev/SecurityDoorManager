@@ -14,6 +14,8 @@ import android.hardware.Camera
 import android.util.DisplayMetrics
 import android.view.Surface
 import android.view.SurfaceHolder
+import android.view.View
+import androidx.navigation.fragment.findNavController
 import com.android.util.DateUtil
 import com.arcsoft.idcardveri.IdCardVerifyError
 import com.arcsoft.idcardveri.IdCardVerifyManager
@@ -151,10 +153,12 @@ class HomeFragment : BaseMvFragment<FragmentHomeBinding, BaseViewModel>(), Surfa
         binding.settingIv.setOnClickListener {
             val settingDialog = SettingDialog(requireContext()).sensitivityOnClick {
                 // startActivity(SensitivityActivity::class.java)
+                findNavController().navigate(R.id.action_homeFragment_to_sensitivityFragment)
             }.frequencyOnClick {
-
+                findNavController().navigate(R.id.action_homeFragment_to_frequencyFragment)
             }.zoneSelectOnClick {
                 //startActivity(ZoneSettingActivity::class.java)
+                findNavController().navigate(R.id.action_homeFragment_to_zoneSettingFragment)
             }.probeTypeOnclick {
 
             }.recordQueryOnclick {
@@ -234,7 +238,10 @@ class HomeFragment : BaseMvFragment<FragmentHomeBinding, BaseViewModel>(), Surfa
 
 
         DataMcuProcess.instance.locationEvent.observe(this) {
-            binding.tvLocation.text = it
+            // binding.tvLocation.text = it
+            initZoneAlarm()
+            analysisPosition(it)
+
         }
 
         updateUIAction.observe(this) {
@@ -310,6 +317,71 @@ class HomeFragment : BaseMvFragment<FragmentHomeBinding, BaseViewModel>(), Surfa
             DateUtil.getCurrentDateTime(DateUtil.Y_M_D_H_M) + " " + DateUtil.getCurrentDayOfWeekCH()
     }
 
+    private fun analysisPosition(data: MutableList<Int>?) {
+        var location = ""
+        data?.let {
+            for (zone in data) {
+                location += resolutionZone(zone)
+            }
+            binding.tvLocation.text = location
+        }
+
+    }
+
+    private fun initZoneAlarm() {
+        binding.run {
+            vZone1.visibility = View.INVISIBLE
+            vZone2.visibility = View.INVISIBLE
+            vZone3.visibility = View.INVISIBLE
+            vZone4.visibility = View.INVISIBLE
+            vZone5.visibility = View.INVISIBLE
+            vZone6.visibility = View.INVISIBLE
+            tvLocation.text = ""
+            tvType.text = ""
+        }
+    }
+
+    /**
+     * 分析区位对应身体的哪个位置
+     */
+    private fun resolutionZone(zone: Int): String {
+        var location = ""
+        when (zone) {
+            0 -> {
+                location = "小腿"
+                binding.vZone1.visibility = View.VISIBLE
+            }
+
+            1 -> {
+                location = "大腿"
+                binding.vZone2.visibility = View.VISIBLE
+            }
+
+            2 -> {
+                location = "腰部"
+                binding.vZone3.visibility = View.VISIBLE
+            }
+
+            3 -> {
+                location = "胸部"
+                binding.vZone4.visibility = View.VISIBLE
+
+            }
+
+            4 -> {
+                location = "颈部"
+                binding.vZone5.visibility = View.VISIBLE
+            }
+
+            5 -> {
+                location = "头部"
+                binding.vZone6.visibility = View.VISIBLE
+            }
+
+            else -> ""
+        }
+        return location
+    }
 
     /**
      *  疑似电子物品

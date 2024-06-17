@@ -24,7 +24,6 @@ abstract class BaseMvFragment<V : ViewBinding, VM : BaseViewModel> : Fragment(),
     private lateinit var mActivityProvider: ViewModelProvider
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,31 +44,31 @@ abstract class BaseMvFragment<V : ViewBinding, VM : BaseViewModel> : Fragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mActivityProvider = ViewModelProvider(this)
+        initParam()
         initView()
         initData()
-        initParam()
         initListener()
         initViewObservable()
-
-
-        mActivityProvider = ViewModelProvider(this)
     }
 
     /**
      *创建ViewModel对象
      */
     private fun createViewModel(): VM {
-        return ViewModelProvider(this).get(getVmClazz(this))
+        return ViewModelProvider(this)[getVmClazz(this)]
     }
 
     /**
      * 获取Activity作用域的ViewModel
      */
     protected fun <T : ViewModel> getActivityViewModel(modelClass: Class<T>): T {
-        if (mActivityProvider == null) {
-            mActivityProvider = ViewModelProvider(this)
-        }
-        return mActivityProvider.get(modelClass)
+        return mActivityProvider[modelClass]
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }
